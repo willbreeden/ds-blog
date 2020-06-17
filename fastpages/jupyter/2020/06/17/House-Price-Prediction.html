@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>House Prices | Will Breeden’s Data Science Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="House Prices" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Predict the sales price for each house" />
+<meta property="og:description" content="Predict the sales price for each house" />
+<link rel="canonical" href="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html" />
+<meta property="og:url" content="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html" />
+<meta property="og:site_name" content="Will Breeden’s Data Science Blog" />
+<meta property="og:image" content="https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-06-17T00:00:00-05:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html"},"description":"Predict the sales price for each house","@type":"BlogPosting","url":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html","headline":"House Prices","dateModified":"2020-06-17T00:00:00-05:00","datePublished":"2020-06-17T00:00:00-05:00","image":"https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/ds-blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://willbreeden.github.io/ds-blog/feed.xml" title="Will Breeden's Data Science Blog" /><link rel="shortcut icon" type="image/x-icon" href="/ds-blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>House Prices | Will Breeden’s Data Science Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="House Prices" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Predict the sales price for each house" />
+<meta property="og:description" content="Predict the sales price for each house" />
+<link rel="canonical" href="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html" />
+<meta property="og:url" content="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html" />
+<meta property="og:site_name" content="Will Breeden’s Data Science Blog" />
+<meta property="og:image" content="https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-06-17T00:00:00-05:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html"},"description":"Predict the sales price for each house","@type":"BlogPosting","url":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html","headline":"House Prices","dateModified":"2020-06-17T00:00:00-05:00","datePublished":"2020-06-17T00:00:00-05:00","image":"https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://willbreeden.github.io/ds-blog/feed.xml" title="Will Breeden's Data Science Blog" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+<script type="text/javascript">
+require.config({
+  paths: {
+    jquery: 'https://code.jquery.com/jquery-3.5.0.min',
+    plotly: 'https://cdn.plot.ly/plotly-latest.min'
+  },
+
+  shim: {
+    plotly: {
+      deps: ['jquery'],
+      exports: 'plotly'
+    }
+  }
+});
+</script>
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/ds-blog/">Will Breeden&#39;s Data Science Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/ds-blog/about/">About Me</a><a class="page-link" href="/ds-blog/search/">Search</a><a class="page-link" href="/ds-blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">House Prices</h1><p class="page-description">Predict the sales price for each house</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-06-17T00:00:00-05:00" itemprop="datePublished">
+        Jun 17, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      8 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/ds-blog/categories/#fastpages">fastpages</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/ds-blog/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/willbreeden/ds-blog/tree/master/_notebooks/2020-06-17-House Price Prediction.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/ds-blog/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/willbreeden/ds-blog/master?filepath=_notebooks%2F2020-06-17-House+Price+Prediction.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/ds-blog/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/willbreeden/ds-blog/blob/master/_notebooks/2020-06-17-House Price Prediction.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/ds-blog/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-06-17-House Price Prediction.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Import Libraries</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Read datasets into data frames</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./data/train.csv&#39;</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./data/test.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">train</span><span class="p">,</span><span class="n">test</span><span class="p">],</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">,</span><span class="s1">&#39;test&#39;</span><span class="p">],</span><span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Data-Cleaning">Data Cleaning<a class="anchor-link" href="#Data-Cleaning"> </a></h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+MultiIndex: 2919 entries, (train, 0) to (test, 1458)
+Data columns (total 81 columns):
+Id               2919 non-null int64
+MSSubClass       2919 non-null int64
+MSZoning         2915 non-null object
+LotFrontage      2433 non-null float64
+LotArea          2919 non-null int64
+Street           2919 non-null object
+Alley            198 non-null object
+LotShape         2919 non-null object
+LandContour      2919 non-null object
+Utilities        2917 non-null object
+LotConfig        2919 non-null object
+LandSlope        2919 non-null object
+Neighborhood     2919 non-null object
+Condition1       2919 non-null object
+Condition2       2919 non-null object
+BldgType         2919 non-null object
+HouseStyle       2919 non-null object
+OverallQual      2919 non-null int64
+OverallCond      2919 non-null int64
+YearBuilt        2919 non-null int64
+YearRemodAdd     2919 non-null int64
+RoofStyle        2919 non-null object
+RoofMatl         2919 non-null object
+Exterior1st      2918 non-null object
+Exterior2nd      2918 non-null object
+MasVnrType       2895 non-null object
+MasVnrArea       2896 non-null float64
+ExterQual        2919 non-null object
+ExterCond        2919 non-null object
+Foundation       2919 non-null object
+BsmtQual         2838 non-null object
+BsmtCond         2837 non-null object
+BsmtExposure     2837 non-null object
+BsmtFinType1     2840 non-null object
+BsmtFinSF1       2918 non-null float64
+BsmtFinType2     2839 non-null object
+BsmtFinSF2       2918 non-null float64
+BsmtUnfSF        2918 non-null float64
+TotalBsmtSF      2918 non-null float64
+Heating          2919 non-null object
+HeatingQC        2919 non-null object
+CentralAir       2919 non-null object
+Electrical       2918 non-null object
+1stFlrSF         2919 non-null int64
+2ndFlrSF         2919 non-null int64
+LowQualFinSF     2919 non-null int64
+GrLivArea        2919 non-null int64
+BsmtFullBath     2917 non-null float64
+BsmtHalfBath     2917 non-null float64
+FullBath         2919 non-null int64
+HalfBath         2919 non-null int64
+BedroomAbvGr     2919 non-null int64
+KitchenAbvGr     2919 non-null int64
+KitchenQual      2918 non-null object
+TotRmsAbvGrd     2919 non-null int64
+Functional       2917 non-null object
+Fireplaces       2919 non-null int64
+FireplaceQu      1499 non-null object
+GarageType       2762 non-null object
+GarageYrBlt      2760 non-null float64
+GarageFinish     2760 non-null object
+GarageCars       2918 non-null float64
+GarageArea       2918 non-null float64
+GarageQual       2760 non-null object
+GarageCond       2760 non-null object
+PavedDrive       2919 non-null object
+WoodDeckSF       2919 non-null int64
+OpenPorchSF      2919 non-null int64
+EnclosedPorch    2919 non-null int64
+3SsnPorch        2919 non-null int64
+ScreenPorch      2919 non-null int64
+PoolArea         2919 non-null int64
+PoolQC           10 non-null object
+Fence            571 non-null object
+MiscFeature      105 non-null object
+MiscVal          2919 non-null int64
+MoSold           2919 non-null int64
+YrSold           2919 non-null int64
+SaleType         2918 non-null object
+SaleCondition    2919 non-null object
+SalePrice        1460 non-null float64
+dtypes: float64(12), int64(26), object(43)
+memory usage: 1.3+ MB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Id               0.000000
+MSSubClass       0.000000
+MSZoning         0.001370
+LotFrontage      0.166495
+LotArea          0.000000
+Street           0.000000
+Alley            0.932169
+LotShape         0.000000
+LandContour      0.000000
+Utilities        0.000685
+LotConfig        0.000000
+LandSlope        0.000000
+Neighborhood     0.000000
+Condition1       0.000000
+Condition2       0.000000
+BldgType         0.000000
+HouseStyle       0.000000
+OverallQual      0.000000
+OverallCond      0.000000
+YearBuilt        0.000000
+YearRemodAdd     0.000000
+RoofStyle        0.000000
+RoofMatl         0.000000
+Exterior1st      0.000343
+Exterior2nd      0.000343
+MasVnrType       0.008222
+MasVnrArea       0.007879
+ExterQual        0.000000
+ExterCond        0.000000
+Foundation       0.000000
+                   ...   
+BedroomAbvGr     0.000000
+KitchenAbvGr     0.000000
+KitchenQual      0.000343
+TotRmsAbvGrd     0.000000
+Functional       0.000685
+Fireplaces       0.000000
+FireplaceQu      0.486468
+GarageType       0.053786
+GarageYrBlt      0.054471
+GarageFinish     0.054471
+GarageCars       0.000343
+GarageArea       0.000343
+GarageQual       0.054471
+GarageCond       0.054471
+PavedDrive       0.000000
+WoodDeckSF       0.000000
+OpenPorchSF      0.000000
+EnclosedPorch    0.000000
+3SsnPorch        0.000000
+ScreenPorch      0.000000
+PoolArea         0.000000
+PoolQC           0.996574
+Fence            0.804385
+MiscFeature      0.964029
+MiscVal          0.000000
+MoSold           0.000000
+YrSold           0.000000
+SaleType         0.000343
+SaleCondition    0.000000
+SalePrice        0.499829
+Length: 81, dtype: float64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Numerical-Features">Numerical Features<a class="anchor-link" href="#Numerical-Features"> </a></h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_num</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="s1">&#39;number&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_num</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+MultiIndex: 2919 entries, (train, 0) to (test, 1458)
+Data columns (total 38 columns):
+Id               2919 non-null int64
+MSSubClass       2919 non-null int64
+LotFrontage      2433 non-null float64
+LotArea          2919 non-null int64
+OverallQual      2919 non-null int64
+OverallCond      2919 non-null int64
+YearBuilt        2919 non-null int64
+YearRemodAdd     2919 non-null int64
+MasVnrArea       2896 non-null float64
+BsmtFinSF1       2918 non-null float64
+BsmtFinSF2       2918 non-null float64
+BsmtUnfSF        2918 non-null float64
+TotalBsmtSF      2918 non-null float64
+1stFlrSF         2919 non-null int64
+2ndFlrSF         2919 non-null int64
+LowQualFinSF     2919 non-null int64
+GrLivArea        2919 non-null int64
+BsmtFullBath     2917 non-null float64
+BsmtHalfBath     2917 non-null float64
+FullBath         2919 non-null int64
+HalfBath         2919 non-null int64
+BedroomAbvGr     2919 non-null int64
+KitchenAbvGr     2919 non-null int64
+TotRmsAbvGrd     2919 non-null int64
+Fireplaces       2919 non-null int64
+GarageYrBlt      2760 non-null float64
+GarageCars       2918 non-null float64
+GarageArea       2918 non-null float64
+WoodDeckSF       2919 non-null int64
+OpenPorchSF      2919 non-null int64
+EnclosedPorch    2919 non-null int64
+3SsnPorch        2919 non-null int64
+ScreenPorch      2919 non-null int64
+PoolArea         2919 non-null int64
+MiscVal          2919 non-null int64
+MoSold           2919 non-null int64
+YrSold           2919 non-null int64
+SalePrice        1460 non-null float64
+dtypes: float64(12), int64(26)
+memory usage: 886.6+ KB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_num</span> <span class="o">=</span> <span class="n">df_num</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_num</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+MultiIndex: 2919 entries, (train, 0) to (test, 1458)
+Data columns (total 38 columns):
+Id               2919 non-null int64
+MSSubClass       2919 non-null int64
+LotFrontage      2919 non-null float64
+LotArea          2919 non-null int64
+OverallQual      2919 non-null int64
+OverallCond      2919 non-null int64
+YearBuilt        2919 non-null int64
+YearRemodAdd     2919 non-null int64
+MasVnrArea       2919 non-null float64
+BsmtFinSF1       2919 non-null float64
+BsmtFinSF2       2919 non-null float64
+BsmtUnfSF        2919 non-null float64
+TotalBsmtSF      2919 non-null float64
+1stFlrSF         2919 non-null int64
+2ndFlrSF         2919 non-null int64
+LowQualFinSF     2919 non-null int64
+GrLivArea        2919 non-null int64
+BsmtFullBath     2919 non-null float64
+BsmtHalfBath     2919 non-null float64
+FullBath         2919 non-null int64
+HalfBath         2919 non-null int64
+BedroomAbvGr     2919 non-null int64
+KitchenAbvGr     2919 non-null int64
+TotRmsAbvGrd     2919 non-null int64
+Fireplaces       2919 non-null int64
+GarageYrBlt      2919 non-null float64
+GarageCars       2919 non-null float64
+GarageArea       2919 non-null float64
+WoodDeckSF       2919 non-null int64
+OpenPorchSF      2919 non-null int64
+EnclosedPorch    2919 non-null int64
+3SsnPorch        2919 non-null int64
+ScreenPorch      2919 non-null int64
+PoolArea         2919 non-null int64
+MiscVal          2919 non-null int64
+MoSold           2919 non-null int64
+YrSold           2919 non-null int64
+SalePrice        2919 non-null float64
+dtypes: float64(12), int64(26)
+memory usage: 886.6+ KB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_num</span><span class="p">[</span><span class="s1">&#39;log_sp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">df_num</span><span class="p">[</span><span class="s1">&#39;SalePrice&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_num</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+MultiIndex: 2919 entries, (train, 0) to (test, 1458)
+Data columns (total 39 columns):
+Id               2919 non-null int64
+MSSubClass       2919 non-null int64
+LotFrontage      2919 non-null float64
+LotArea          2919 non-null int64
+OverallQual      2919 non-null int64
+OverallCond      2919 non-null int64
+YearBuilt        2919 non-null int64
+YearRemodAdd     2919 non-null int64
+MasVnrArea       2919 non-null float64
+BsmtFinSF1       2919 non-null float64
+BsmtFinSF2       2919 non-null float64
+BsmtUnfSF        2919 non-null float64
+TotalBsmtSF      2919 non-null float64
+1stFlrSF         2919 non-null int64
+2ndFlrSF         2919 non-null int64
+LowQualFinSF     2919 non-null int64
+GrLivArea        2919 non-null int64
+BsmtFullBath     2919 non-null float64
+BsmtHalfBath     2919 non-null float64
+FullBath         2919 non-null int64
+HalfBath         2919 non-null int64
+BedroomAbvGr     2919 non-null int64
+KitchenAbvGr     2919 non-null int64
+TotRmsAbvGrd     2919 non-null int64
+Fireplaces       2919 non-null int64
+GarageYrBlt      2919 non-null float64
+GarageCars       2919 non-null float64
+GarageArea       2919 non-null float64
+WoodDeckSF       2919 non-null int64
+OpenPorchSF      2919 non-null int64
+EnclosedPorch    2919 non-null int64
+3SsnPorch        2919 non-null int64
+ScreenPorch      2919 non-null int64
+PoolArea         2919 non-null int64
+MiscVal          2919 non-null int64
+MoSold           2919 non-null int64
+YrSold           2919 non-null int64
+SalePrice        2919 non-null float64
+log_sp           2919 non-null float64
+dtypes: float64(13), int64(26)
+memory usage: 909.4+ KB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Categorical-Variables">Categorical Variables<a class="anchor-link" href="#Categorical-Variables"> </a></h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_cat</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_cat</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+MultiIndex: 2919 entries, (train, 0) to (test, 1458)
+Data columns (total 43 columns):
+MSZoning         2915 non-null object
+Street           2919 non-null object
+Alley            198 non-null object
+LotShape         2919 non-null object
+LandContour      2919 non-null object
+Utilities        2917 non-null object
+LotConfig        2919 non-null object
+LandSlope        2919 non-null object
+Neighborhood     2919 non-null object
+Condition1       2919 non-null object
+Condition2       2919 non-null object
+BldgType         2919 non-null object
+HouseStyle       2919 non-null object
+RoofStyle        2919 non-null object
+RoofMatl         2919 non-null object
+Exterior1st      2918 non-null object
+Exterior2nd      2918 non-null object
+MasVnrType       2895 non-null object
+ExterQual        2919 non-null object
+ExterCond        2919 non-null object
+Foundation       2919 non-null object
+BsmtQual         2838 non-null object
+BsmtCond         2837 non-null object
+BsmtExposure     2837 non-null object
+BsmtFinType1     2840 non-null object
+BsmtFinType2     2839 non-null object
+Heating          2919 non-null object
+HeatingQC        2919 non-null object
+CentralAir       2919 non-null object
+Electrical       2918 non-null object
+KitchenQual      2918 non-null object
+Functional       2917 non-null object
+FireplaceQu      1499 non-null object
+GarageType       2762 non-null object
+GarageFinish     2760 non-null object
+GarageQual       2760 non-null object
+GarageCond       2760 non-null object
+PavedDrive       2919 non-null object
+PoolQC           10 non-null object
+Fence            571 non-null object
+MiscFeature      105 non-null object
+SaleType         2918 non-null object
+SaleCondition    2919 non-null object
+dtypes: object(43)
+memory usage: 510.3+ KB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_cat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">df_cat</span><span class="p">,</span><span class="n">dummy_na</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">drop_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_cat</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Index([&#39;MSZoning_FV&#39;, &#39;MSZoning_RH&#39;, &#39;MSZoning_RL&#39;, &#39;MSZoning_RM&#39;,
+       &#39;MSZoning_nan&#39;, &#39;Street_Pave&#39;, &#39;Street_nan&#39;, &#39;Alley_Pave&#39;, &#39;Alley_nan&#39;,
+       &#39;LotShape_IR2&#39;,
+       ...
+       &#39;SaleType_New&#39;, &#39;SaleType_Oth&#39;, &#39;SaleType_WD&#39;, &#39;SaleType_nan&#39;,
+       &#39;SaleCondition_AdjLand&#39;, &#39;SaleCondition_Alloca&#39;, &#39;SaleCondition_Family&#39;,
+       &#39;SaleCondition_Normal&#39;, &#39;SaleCondition_Partial&#39;, &#39;SaleCondition_nan&#39;],
+      dtype=&#39;object&#39;, length=252)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_num</span><span class="p">,</span><span class="n">df_cat</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Model-Building">Model Building<a class="anchor-link" href="#Model-Building"> </a></h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">df_all</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;SalePrice&#39;</span><span class="p">,</span><span class="s1">&#39;log_sp&#39;</span><span class="p">,</span><span class="s1">&#39;Id&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">df_num</span><span class="p">[</span><span class="s1">&#39;log_sp&#39;</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="s1">&#39;train&#39;</span><span class="p">],</span><span class="n">y</span><span class="p">[:</span><span class="s1">&#39;train&#39;</span><span class="p">],</span><span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clf</span> <span class="o">=</span> <span class="n">RandomForestRegressor</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>RandomForestRegressor(bootstrap=True, criterion=&#39;mse&#39;, max_depth=None,
+           max_features=&#39;auto&#39;, max_leaf_nodes=None,
+           min_impurity_decrease=0.0, min_impurity_split=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=-1,
+           oob_score=False, random_state=None, verbose=0, warm_start=False)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.9719286284854999</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.8430682997448733</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">feature_importances</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">,</span>
+                                   <span class="n">index</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                                    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">feature_importances</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>OverallQual</th>
+      <td>0.535933</td>
+    </tr>
+    <tr>
+      <th>GrLivArea</th>
+      <td>0.131919</td>
+    </tr>
+    <tr>
+      <th>GarageCars</th>
+      <td>0.060035</td>
+    </tr>
+    <tr>
+      <th>CentralAir_Y</th>
+      <td>0.032251</td>
+    </tr>
+    <tr>
+      <th>TotalBsmtSF</th>
+      <td>0.027301</td>
+    </tr>
+    <tr>
+      <th>BsmtFinSF1</th>
+      <td>0.027256</td>
+    </tr>
+    <tr>
+      <th>GarageArea</th>
+      <td>0.023395</td>
+    </tr>
+    <tr>
+      <th>1stFlrSF</th>
+      <td>0.015684</td>
+    </tr>
+    <tr>
+      <th>YearBuilt</th>
+      <td>0.010039</td>
+    </tr>
+    <tr>
+      <th>YearRemodAdd</th>
+      <td>0.009184</td>
+    </tr>
+    <tr>
+      <th>OverallCond</th>
+      <td>0.009037</td>
+    </tr>
+    <tr>
+      <th>LotFrontage</th>
+      <td>0.008596</td>
+    </tr>
+    <tr>
+      <th>OpenPorchSF</th>
+      <td>0.008437</td>
+    </tr>
+    <tr>
+      <th>LotArea</th>
+      <td>0.006957</td>
+    </tr>
+    <tr>
+      <th>MSZoning_RM</th>
+      <td>0.005465</td>
+    </tr>
+    <tr>
+      <th>GarageType_Detchd</th>
+      <td>0.004604</td>
+    </tr>
+    <tr>
+      <th>BsmtUnfSF</th>
+      <td>0.004191</td>
+    </tr>
+    <tr>
+      <th>EnclosedPorch</th>
+      <td>0.003845</td>
+    </tr>
+    <tr>
+      <th>SaleCondition_Family</th>
+      <td>0.003516</td>
+    </tr>
+    <tr>
+      <th>WoodDeckSF</th>
+      <td>0.003441</td>
+    </tr>
+    <tr>
+      <th>2ndFlrSF</th>
+      <td>0.003435</td>
+    </tr>
+    <tr>
+      <th>GarageYrBlt</th>
+      <td>0.003128</td>
+    </tr>
+    <tr>
+      <th>GarageFinish_Unf</th>
+      <td>0.003085</td>
+    </tr>
+    <tr>
+      <th>TotRmsAbvGrd</th>
+      <td>0.002972</td>
+    </tr>
+    <tr>
+      <th>MoSold</th>
+      <td>0.002825</td>
+    </tr>
+    <tr>
+      <th>BedroomAbvGr</th>
+      <td>0.002419</td>
+    </tr>
+    <tr>
+      <th>MasVnrArea</th>
+      <td>0.002269</td>
+    </tr>
+    <tr>
+      <th>RoofStyle_Gambrel</th>
+      <td>0.001755</td>
+    </tr>
+    <tr>
+      <th>SaleCondition_Normal</th>
+      <td>0.001626</td>
+    </tr>
+    <tr>
+      <th>YrSold</th>
+      <td>0.001517</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>Neighborhood_Blueste</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>LotShape_IR3</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Utilities_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Electrical_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Electrical_Mix</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Electrical_FuseP</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>CentralAir_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>LotShape_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>HeatingQC_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>HeatingQC_Po</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>LandContour_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Heating_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Heating_Wall</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Heating_OthW</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Utilities_NoSeWa</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>BsmtCond_Po</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Exterior1st_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>LotConfig_FR3</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Foundation_Wood</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Foundation_Stone</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>ExterCond_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>ExterQual_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>LotConfig_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>MasVnrType_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Exterior2nd_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Exterior2nd_CBlock</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>LandSlope_nan</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Exterior2nd_Brk Cmn</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>Exterior2nd_AsphShn</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>SaleCondition_nan</th>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>288 rows × 1 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test</span><span class="p">[</span><span class="s1">&#39;log_sp&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">])</span>
+<span class="n">test</span><span class="p">[</span><span class="s1">&#39;SalePrice&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">log_sp</span><span class="p">)</span>
+<span class="n">submission</span> <span class="o">=</span> <span class="n">test</span><span class="p">[[</span><span class="s1">&#39;Id&#39;</span><span class="p">,</span><span class="s1">&#39;SalePrice&#39;</span><span class="p">]]</span>
+<span class="n">submission</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;./data/submission.csv&#39;</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="willbreeden/ds-blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/ds-blog/fastpages/jupyter/2020/06/17/House-Price-Prediction.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/ds-blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/ds-blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/ds-blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>My Data Science Journey</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/fastai" title="fastai"><svg class="svg-icon grey"><use xlink:href="/ds-blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/fastdotai" title="fastdotai"><svg class="svg-icon grey"><use xlink:href="/ds-blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
