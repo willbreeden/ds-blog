@@ -1,0 +1,2402 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Help Navigate Robots | Will Breeden’s Data Science Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Help Navigate Robots" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Help robots recognize the floor surface they’re standing on using data collected from Inertial Measurement Units" />
+<meta property="og:description" content="Help robots recognize the floor surface they’re standing on using data collected from Inertial Measurement Units" />
+<link rel="canonical" href="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/Robots.html" />
+<meta property="og:url" content="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/Robots.html" />
+<meta property="og:site_name" content="Will Breeden’s Data Science Blog" />
+<meta property="og:image" content="https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-07T00:00:00-05:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/Robots.html"},"description":"Help robots recognize the floor surface they’re standing on using data collected from Inertial Measurement Units","@type":"BlogPosting","url":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/Robots.html","headline":"Help Navigate Robots","dateModified":"2020-07-07T00:00:00-05:00","datePublished":"2020-07-07T00:00:00-05:00","image":"https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/ds-blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://willbreeden.github.io/ds-blog/feed.xml" title="Will Breeden's Data Science Blog" /><link rel="shortcut icon" type="image/x-icon" href="/ds-blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Help Navigate Robots | Will Breeden’s Data Science Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Help Navigate Robots" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Help robots recognize the floor surface they’re standing on using data collected from Inertial Measurement Units" />
+<meta property="og:description" content="Help robots recognize the floor surface they’re standing on using data collected from Inertial Measurement Units" />
+<link rel="canonical" href="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/Robots.html" />
+<meta property="og:url" content="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/Robots.html" />
+<meta property="og:site_name" content="Will Breeden’s Data Science Blog" />
+<meta property="og:image" content="https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-07T00:00:00-05:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/Robots.html"},"description":"Help robots recognize the floor surface they’re standing on using data collected from Inertial Measurement Units","@type":"BlogPosting","url":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/Robots.html","headline":"Help Navigate Robots","dateModified":"2020-07-07T00:00:00-05:00","datePublished":"2020-07-07T00:00:00-05:00","image":"https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://willbreeden.github.io/ds-blog/feed.xml" title="Will Breeden's Data Science Blog" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+<script type="text/javascript">
+require.config({
+  paths: {
+    jquery: 'https://code.jquery.com/jquery-3.5.0.min',
+    plotly: 'https://cdn.plot.ly/plotly-latest.min'
+  },
+
+  shim: {
+    plotly: {
+      deps: ['jquery'],
+      exports: 'plotly'
+    }
+  }
+});
+</script>
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/ds-blog/">Will Breeden&#39;s Data Science Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/ds-blog/about/">About Me</a><a class="page-link" href="/ds-blog/search/">Search</a><a class="page-link" href="/ds-blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Help Navigate Robots</h1><p class="page-description">Help robots recognize the floor surface they’re standing on using data collected from Inertial Measurement Units</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-07-07T00:00:00-05:00" itemprop="datePublished">
+        Jul 7, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      7 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/ds-blog/categories/#fastpages">fastpages</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/ds-blog/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/willbreeden/ds-blog/tree/master/_notebooks/2020-07-07-Robots.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/ds-blog/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/willbreeden/ds-blog/master?filepath=_notebooks%2F2020-07-07-Robots.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/ds-blog/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/willbreeden/ds-blog/blob/master/_notebooks/2020-07-07-Robots.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/ds-blog/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-07-07-Robots.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;X_train.csv&quot;</span><span class="p">)</span>
+<span class="n">df2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;y_train.csv&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>row_id</th>
+      <th>series_id</th>
+      <th>measurement_number</th>
+      <th>orientation_X</th>
+      <th>orientation_Y</th>
+      <th>orientation_Z</th>
+      <th>orientation_W</th>
+      <th>angular_velocity_X</th>
+      <th>angular_velocity_Y</th>
+      <th>angular_velocity_Z</th>
+      <th>linear_acceleration_X</th>
+      <th>linear_acceleration_Y</th>
+      <th>linear_acceleration_Z</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0_0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>-0.75853</td>
+      <td>-0.63435</td>
+      <td>-0.10488</td>
+      <td>-0.10597</td>
+      <td>0.107650</td>
+      <td>0.017561</td>
+      <td>0.000767</td>
+      <td>-0.74857</td>
+      <td>2.1030</td>
+      <td>-9.7532</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0_1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>-0.75853</td>
+      <td>-0.63434</td>
+      <td>-0.10490</td>
+      <td>-0.10600</td>
+      <td>0.067851</td>
+      <td>0.029939</td>
+      <td>0.003385</td>
+      <td>0.33995</td>
+      <td>1.5064</td>
+      <td>-9.4128</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0_2</td>
+      <td>0</td>
+      <td>2</td>
+      <td>-0.75853</td>
+      <td>-0.63435</td>
+      <td>-0.10492</td>
+      <td>-0.10597</td>
+      <td>0.007275</td>
+      <td>0.028934</td>
+      <td>-0.005978</td>
+      <td>-0.26429</td>
+      <td>1.5922</td>
+      <td>-8.7267</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0_3</td>
+      <td>0</td>
+      <td>3</td>
+      <td>-0.75852</td>
+      <td>-0.63436</td>
+      <td>-0.10495</td>
+      <td>-0.10597</td>
+      <td>-0.013053</td>
+      <td>0.019448</td>
+      <td>-0.008974</td>
+      <td>0.42684</td>
+      <td>1.0993</td>
+      <td>-10.0960</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0_4</td>
+      <td>0</td>
+      <td>4</td>
+      <td>-0.75852</td>
+      <td>-0.63435</td>
+      <td>-0.10495</td>
+      <td>-0.10596</td>
+      <td>0.005135</td>
+      <td>0.007652</td>
+      <td>0.005245</td>
+      <td>-0.50969</td>
+      <td>1.4689</td>
+      <td>-10.4410</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df2</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>series_id</th>
+      <th>group_id</th>
+      <th>surface</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>13</td>
+      <td>fine_concrete</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>31</td>
+      <td>concrete</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>20</td>
+      <td>concrete</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>31</td>
+      <td>concrete</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>22</td>
+      <td>soft_tiles</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df2</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(3810, 3)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Feature-Engineering">Feature Engineering<a class="anchor-link" href="#Feature-Engineering"> </a></h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;orientation_T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;orientation_X&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;orientation_Y&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                               <span class="n">df</span><span class="p">[</span><span class="s1">&#39;orientation_Z&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;linear_acceleration_T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;linear_acceleration_X&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;linear_acceleration_Y&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                               <span class="n">df</span><span class="p">[</span><span class="s1">&#39;linear_acceleration_Z&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;angular_velocity_T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;angular_velocity_X&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;angular_velocity_Y&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span>
+                               <span class="n">df</span><span class="p">[</span><span class="s1">&#39;angular_velocity_Z&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;series_id&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;orientation_X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;orientation_Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;orientation_Z&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                        <span class="s1">&#39;orientation_W&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                        <span class="s1">&#39;orientation_T&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;linear_acceleration_X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;linear_acceleration_Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;linear_acceleration_Z&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                        <span class="s1">&#39;linear_acceleration_T&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;angular_velocity_X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;angular_velocity_Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;angular_velocity_Z&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">],</span>
+                                       <span class="s1">&#39;angular_velocity_T&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">,</span><span class="nb">sum</span><span class="p">]})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="n">df_agg</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;orientation_X&#39;, &#39;mean&#39;),
+ (&#39;orientation_X&#39;, &#39;min&#39;),
+ (&#39;orientation_X&#39;, &#39;max&#39;),
+ (&#39;orientation_X&#39;, &#39;sum&#39;),
+ (&#39;orientation_Y&#39;, &#39;mean&#39;),
+ (&#39;orientation_Y&#39;, &#39;min&#39;),
+ (&#39;orientation_Y&#39;, &#39;max&#39;),
+ (&#39;orientation_Y&#39;, &#39;sum&#39;),
+ (&#39;orientation_Z&#39;, &#39;mean&#39;),
+ (&#39;orientation_Z&#39;, &#39;min&#39;),
+ (&#39;orientation_Z&#39;, &#39;max&#39;),
+ (&#39;orientation_Z&#39;, &#39;sum&#39;),
+ (&#39;orientation_W&#39;, &#39;mean&#39;),
+ (&#39;orientation_W&#39;, &#39;min&#39;),
+ (&#39;orientation_W&#39;, &#39;max&#39;),
+ (&#39;orientation_W&#39;, &#39;sum&#39;),
+ (&#39;orientation_T&#39;, &#39;mean&#39;),
+ (&#39;orientation_T&#39;, &#39;min&#39;),
+ (&#39;orientation_T&#39;, &#39;max&#39;),
+ (&#39;orientation_T&#39;, &#39;sum&#39;),
+ (&#39;linear_acceleration_X&#39;, &#39;mean&#39;),
+ (&#39;linear_acceleration_X&#39;, &#39;min&#39;),
+ (&#39;linear_acceleration_X&#39;, &#39;max&#39;),
+ (&#39;linear_acceleration_X&#39;, &#39;sum&#39;),
+ (&#39;linear_acceleration_Y&#39;, &#39;mean&#39;),
+ (&#39;linear_acceleration_Y&#39;, &#39;min&#39;),
+ (&#39;linear_acceleration_Y&#39;, &#39;max&#39;),
+ (&#39;linear_acceleration_Y&#39;, &#39;sum&#39;),
+ (&#39;linear_acceleration_Z&#39;, &#39;mean&#39;),
+ (&#39;linear_acceleration_Z&#39;, &#39;min&#39;),
+ (&#39;linear_acceleration_Z&#39;, &#39;max&#39;),
+ (&#39;linear_acceleration_Z&#39;, &#39;sum&#39;),
+ (&#39;linear_acceleration_T&#39;, &#39;mean&#39;),
+ (&#39;linear_acceleration_T&#39;, &#39;min&#39;),
+ (&#39;linear_acceleration_T&#39;, &#39;max&#39;),
+ (&#39;linear_acceleration_T&#39;, &#39;sum&#39;),
+ (&#39;angular_velocity_X&#39;, &#39;mean&#39;),
+ (&#39;angular_velocity_X&#39;, &#39;min&#39;),
+ (&#39;angular_velocity_X&#39;, &#39;max&#39;),
+ (&#39;angular_velocity_X&#39;, &#39;sum&#39;),
+ (&#39;angular_velocity_Y&#39;, &#39;mean&#39;),
+ (&#39;angular_velocity_Y&#39;, &#39;min&#39;),
+ (&#39;angular_velocity_Y&#39;, &#39;max&#39;),
+ (&#39;angular_velocity_Y&#39;, &#39;sum&#39;),
+ (&#39;angular_velocity_Z&#39;, &#39;mean&#39;),
+ (&#39;angular_velocity_Z&#39;, &#39;min&#39;),
+ (&#39;angular_velocity_Z&#39;, &#39;max&#39;),
+ (&#39;angular_velocity_Z&#39;, &#39;sum&#39;),
+ (&#39;angular_velocity_T&#39;, &#39;mean&#39;),
+ (&#39;angular_velocity_T&#39;, &#39;min&#39;),
+ (&#39;angular_velocity_T&#39;, &#39;max&#39;),
+ (&#39;angular_velocity_T&#39;, &#39;sum&#39;)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_X&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_X&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_X&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_Y&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_Y&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_Y&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_Z&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_W&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_W&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_W&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_T&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_T&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;orientation_T&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_X&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_X&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_X&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_Y&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_Y&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_Y&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_Z&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_T&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_T&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;linear_acceleration_T&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_X&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_X&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_X&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_Y&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_Y&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_Y&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_Z&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_Z&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+<span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_T&#39;</span><span class="p">,</span><span class="s1">&#39;range&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_T&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)]</span> <span class="o">-</span> <span class="n">df_agg</span><span class="p">[(</span><span class="s1">&#39;angular_velocity_T&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="4" halign="left">orientation_X</th>
+      <th colspan="4" halign="left">orientation_Y</th>
+      <th colspan="2" halign="left">orientation_Z</th>
+      <th>...</th>
+      <th>orientation_W</th>
+      <th>orientation_T</th>
+      <th>linear_acceleration_X</th>
+      <th>linear_acceleration_Y</th>
+      <th>linear_acceleration_Z</th>
+      <th>linear_acceleration_T</th>
+      <th>angular_velocity_X</th>
+      <th>angular_velocity_Y</th>
+      <th>angular_velocity_Z</th>
+      <th>angular_velocity_T</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>sum</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>sum</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>...</th>
+      <th>range</th>
+      <th>range</th>
+      <th>range</th>
+      <th>range</th>
+      <th>range</th>
+      <th>range</th>
+      <th>range</th>
+      <th>range</th>
+      <th>range</th>
+      <th>range</th>
+    </tr>
+    <tr>
+      <th>series_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-0.758666</td>
+      <td>-0.75953</td>
+      <td>-0.75822</td>
+      <td>-97.10922</td>
+      <td>-0.634008</td>
+      <td>-0.63456</td>
+      <td>-0.63306</td>
+      <td>-81.15298</td>
+      <td>-0.105474</td>
+      <td>-0.106140</td>
+      <td>...</td>
+      <td>0.001460</td>
+      <td>0.000160</td>
+      <td>4.71820</td>
+      <td>5.310983</td>
+      <td>6.2439</td>
+      <td>5.458424</td>
+      <td>0.268060</td>
+      <td>0.152102</td>
+      <td>0.081901</td>
+      <td>0.151781</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-0.958606</td>
+      <td>-0.95896</td>
+      <td>-0.95837</td>
+      <td>-122.70162</td>
+      <td>0.241867</td>
+      <td>0.24074</td>
+      <td>0.24270</td>
+      <td>30.95897</td>
+      <td>0.031650</td>
+      <td>0.030504</td>
+      <td>...</td>
+      <td>0.002220</td>
+      <td>0.000331</td>
+      <td>8.29360</td>
+      <td>8.834200</td>
+      <td>14.1831</td>
+      <td>11.118339</td>
+      <td>0.538220</td>
+      <td>0.246410</td>
+      <td>0.250760</td>
+      <td>0.267779</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-0.512057</td>
+      <td>-0.51434</td>
+      <td>-0.50944</td>
+      <td>-65.54334</td>
+      <td>-0.846171</td>
+      <td>-0.84779</td>
+      <td>-0.84490</td>
+      <td>-108.30988</td>
+      <td>-0.129371</td>
+      <td>-0.130300</td>
+      <td>...</td>
+      <td>0.001157</td>
+      <td>0.000078</td>
+      <td>4.44630</td>
+      <td>7.464500</td>
+      <td>6.7548</td>
+      <td>5.931175</td>
+      <td>0.294630</td>
+      <td>0.199756</td>
+      <td>0.104427</td>
+      <td>0.161048</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>-0.939169</td>
+      <td>-0.93968</td>
+      <td>-0.93884</td>
+      <td>-120.21364</td>
+      <td>0.310140</td>
+      <td>0.30943</td>
+      <td>0.31147</td>
+      <td>39.69794</td>
+      <td>0.038955</td>
+      <td>0.037922</td>
+      <td>...</td>
+      <td>0.005030</td>
+      <td>0.000717</td>
+      <td>7.99660</td>
+      <td>17.568100</td>
+      <td>19.2859</td>
+      <td>18.769065</td>
+      <td>0.920650</td>
+      <td>0.303930</td>
+      <td>0.158759</td>
+      <td>0.509122</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.891301</td>
+      <td>-0.89689</td>
+      <td>-0.88673</td>
+      <td>-114.08647</td>
+      <td>0.428144</td>
+      <td>0.41646</td>
+      <td>0.43740</td>
+      <td>54.80246</td>
+      <td>0.060056</td>
+      <td>0.058247</td>
+      <td>...</td>
+      <td>0.001940</td>
+      <td>0.000272</td>
+      <td>2.09851</td>
+      <td>4.476030</td>
+      <td>3.5260</td>
+      <td>3.413774</td>
+      <td>0.184974</td>
+      <td>0.075533</td>
+      <td>0.150568</td>
+      <td>0.140159</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 65 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(3810, 65)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">le</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">le</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df2</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>LabelEncoder()</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df2</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">df2</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df2</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>series_id</th>
+      <th>group_id</th>
+      <th>surface</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>13</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>31</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>20</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>31</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>22</td>
+      <td>6</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Modelling">Modelling<a class="anchor-link" href="#Modelling"> </a></h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Split dataset into training set and test set</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">df_agg</span><span class="p">,</span> <span class="n">df2</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">],</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span> <span class="c1"># 70% training and 30% test</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="n">min_samples_leaf</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">clf_predictions</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span> 
+<span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.8442694663167104</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.9835020622422197</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">feature_importances</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">,</span>
+                                   <span class="n">index</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                                    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">feature_importances</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="3" valign="top">orientation_X</th>
+      <th>min</th>
+      <td>0.037489</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>0.036277</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>0.035278</td>
+    </tr>
+    <tr>
+      <th>orientation_W</th>
+      <th>mean</th>
+      <td>0.028306</td>
+    </tr>
+    <tr>
+      <th>orientation_T</th>
+      <th>mean</th>
+      <td>0.027860</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_X</th>
+      <th>range</th>
+      <td>0.027695</td>
+    </tr>
+    <tr>
+      <th>orientation_X</th>
+      <th>sum</th>
+      <td>0.027230</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">orientation_W</th>
+      <th>sum</th>
+      <td>0.026694</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.026412</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">orientation_Z</th>
+      <th>mean</th>
+      <td>0.025123</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.024066</td>
+    </tr>
+    <tr>
+      <th>orientation_W</th>
+      <th>max</th>
+      <td>0.023581</td>
+    </tr>
+    <tr>
+      <th>orientation_T</th>
+      <th>sum</th>
+      <td>0.023560</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_Z</th>
+      <th>range</th>
+      <td>0.022880</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Y</th>
+      <th>range</th>
+      <td>0.022406</td>
+    </tr>
+    <tr>
+      <th>orientation_T</th>
+      <th>max</th>
+      <td>0.022220</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_T</th>
+      <th>range</th>
+      <td>0.022149</td>
+    </tr>
+    <tr>
+      <th>orientation_Z</th>
+      <th>sum</th>
+      <td>0.021620</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_T</th>
+      <th>max</th>
+      <td>0.021409</td>
+    </tr>
+    <tr>
+      <th>orientation_Z</th>
+      <th>max</th>
+      <td>0.019985</td>
+    </tr>
+    <tr>
+      <th>orientation_T</th>
+      <th>min</th>
+      <td>0.019738</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_T</th>
+      <th>mean</th>
+      <td>0.019334</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">orientation_Y</th>
+      <th>mean</th>
+      <td>0.018758</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>0.018637</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.017842</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_Y</th>
+      <th>range</th>
+      <td>0.017529</td>
+    </tr>
+    <tr>
+      <th>orientation_Y</th>
+      <th>sum</th>
+      <td>0.017040</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_Z</th>
+      <th>min</th>
+      <td>0.016843</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_T</th>
+      <th>sum</th>
+      <td>0.015739</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_X</th>
+      <th>max</th>
+      <td>0.015262</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Z</th>
+      <th>min</th>
+      <td>0.011951</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_T</th>
+      <th>range</th>
+      <td>0.011903</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_Z</th>
+      <th>max</th>
+      <td>0.011790</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_T</th>
+      <th>max</th>
+      <td>0.011645</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">angular_velocity_X</th>
+      <th>max</th>
+      <td>0.010919</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.010749</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_Y</th>
+      <th>max</th>
+      <td>0.010397</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Y</th>
+      <th>mean</th>
+      <td>0.009591</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Z</th>
+      <th>sum</th>
+      <td>0.009376</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_T</th>
+      <th>sum</th>
+      <td>0.009289</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Z</th>
+      <th>mean</th>
+      <td>0.008967</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_T</th>
+      <th>min</th>
+      <td>0.008915</td>
+    </tr>
+    <tr>
+      <th>orientation_X</th>
+      <th>range</th>
+      <td>0.008802</td>
+    </tr>
+    <tr>
+      <th>orientation_T</th>
+      <th>range</th>
+      <td>0.008663</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Z</th>
+      <th>max</th>
+      <td>0.007859</td>
+    </tr>
+    <tr>
+      <th>orientation_Y</th>
+      <th>range</th>
+      <td>0.007482</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_T</th>
+      <th>min</th>
+      <td>0.007371</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Y</th>
+      <th>sum</th>
+      <td>0.007285</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Z</th>
+      <th>range</th>
+      <td>0.006595</td>
+    </tr>
+    <tr>
+      <th>orientation_W</th>
+      <th>range</th>
+      <td>0.006150</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">linear_acceleration_Y</th>
+      <th>sum</th>
+      <td>0.006062</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>0.005781</td>
+    </tr>
+    <tr>
+      <th>orientation_Z</th>
+      <th>range</th>
+      <td>0.005657</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_Y</th>
+      <th>min</th>
+      <td>0.005649</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">linear_acceleration_Z</th>
+      <th>sum</th>
+      <td>0.005229</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>0.004893</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_X</th>
+      <th>sum</th>
+      <td>0.004389</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_X</th>
+      <th>mean</th>
+      <td>0.003930</td>
+    </tr>
+    <tr>
+      <th>linear_acceleration_X</th>
+      <th>mean</th>
+      <td>0.003908</td>
+    </tr>
+    <tr>
+      <th>angular_velocity_X</th>
+      <th>sum</th>
+      <td>0.003907</td>
+    </tr>
+  </tbody>
+</table>
+<p>65 rows × 1 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">clf_predictions</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[[ 39   4   0   0   0   2   3   1   3]
+ [  4 194   3   0   6   2   3   7   7]
+ [  0  11  88   0   1   5   3   3   6]
+ [  0   0   0   4   0   0   0   0   1]
+ [  4   4   0   0  78   1   0   0   6]
+ [  2   7   1   0   1 211   4   2   5]
+ [  1   4   2   0   0   6  74   0   4]
+ [  1   9   1   0   1   4   2 130   7]
+ [  0   5   3   0   0   8   2   6 147]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">le</span><span class="o">.</span><span class="n">classes_</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([&#39;carpet&#39;, &#39;concrete&#39;, &#39;fine_concrete&#39;, &#39;hard_tiles&#39;,
+       &#39;hard_tiles_large_space&#39;, &#39;soft_pvc&#39;, &#39;soft_tiles&#39;, &#39;tiled&#39;,
+       &#39;wood&#39;], dtype=object)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Score-the-test-dataset-and-create-the-submission-file">Score the test dataset and create the submission file<a class="anchor-link" href="#Score-the-test-dataset-and-create-the-submission-file"> </a></h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;X_test.csv&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sub</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>row_id</th>
+      <th>series_id</th>
+      <th>measurement_number</th>
+      <th>orientation_X</th>
+      <th>orientation_Y</th>
+      <th>orientation_Z</th>
+      <th>orientation_W</th>
+      <th>angular_velocity_X</th>
+      <th>angular_velocity_Y</th>
+      <th>angular_velocity_Z</th>
+      <th>linear_acceleration_X</th>
+      <th>linear_acceleration_Y</th>
+      <th>linear_acceleration_Z</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0_0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>-0.025773</td>
+      <td>-0.98864</td>
+      <td>-0.14801</td>
+      <td>0.003350</td>
+      <td>-0.006524</td>
+      <td>-0.001071</td>
+      <td>-0.027390</td>
+      <td>0.10043</td>
+      <td>4.2061</td>
+      <td>-5.5439</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0_1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>-0.025683</td>
+      <td>-0.98862</td>
+      <td>-0.14816</td>
+      <td>0.003439</td>
+      <td>-0.113960</td>
+      <td>0.083987</td>
+      <td>-0.060590</td>
+      <td>-0.70889</td>
+      <td>3.9905</td>
+      <td>-8.0273</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0_2</td>
+      <td>0</td>
+      <td>2</td>
+      <td>-0.025617</td>
+      <td>-0.98861</td>
+      <td>-0.14826</td>
+      <td>0.003571</td>
+      <td>-0.080518</td>
+      <td>0.114860</td>
+      <td>-0.037177</td>
+      <td>1.45710</td>
+      <td>2.2828</td>
+      <td>-11.2990</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0_3</td>
+      <td>0</td>
+      <td>3</td>
+      <td>-0.025566</td>
+      <td>-0.98862</td>
+      <td>-0.14817</td>
+      <td>0.003609</td>
+      <td>0.070067</td>
+      <td>0.033820</td>
+      <td>-0.035904</td>
+      <td>0.71096</td>
+      <td>1.8582</td>
+      <td>-12.2270</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0_4</td>
+      <td>0</td>
+      <td>4</td>
+      <td>-0.025548</td>
+      <td>-0.98866</td>
+      <td>-0.14792</td>
+      <td>0.003477</td>
+      <td>0.152050</td>
+      <td>-0.029016</td>
+      <td>-0.015314</td>
+      <td>3.39960</td>
+      <td>2.7881</td>
+      <td>-10.4100</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg_test</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;series_id&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;orientation_X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                       <span class="s1">&#39;orientation_Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                       <span class="s1">&#39;orientation_Z&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                        <span class="s1">&#39;orientation_W&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                       <span class="s1">&#39;linear_acceleration_X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                       <span class="s1">&#39;linear_acceleration_Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                       <span class="s1">&#39;linear_acceleration_Z&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                       <span class="s1">&#39;angular_velocity_X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                       <span class="s1">&#39;angular_velocity_Y&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">],</span>
+                                       <span class="s1">&#39;angular_velocity_Z&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">min</span> <span class="p">,</span><span class="nb">max</span><span class="p">]})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg_test</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="3" halign="left">orientation_X</th>
+      <th colspan="3" halign="left">orientation_Y</th>
+      <th colspan="3" halign="left">orientation_Z</th>
+      <th>orientation_W</th>
+      <th>...</th>
+      <th>linear_acceleration_Z</th>
+      <th colspan="3" halign="left">angular_velocity_X</th>
+      <th colspan="3" halign="left">angular_velocity_Y</th>
+      <th colspan="3" halign="left">angular_velocity_Z</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>...</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>series_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-0.025810</td>
+      <td>-0.026418</td>
+      <td>-0.025156</td>
+      <td>-0.988644</td>
+      <td>-0.98873</td>
+      <td>-0.98854</td>
+      <td>-0.148006</td>
+      <td>-0.148720</td>
+      <td>-0.147480</td>
+      <td>0.003147</td>
+      <td>...</td>
+      <td>-3.9960</td>
+      <td>0.000994</td>
+      <td>-0.225610</td>
+      <td>0.231270</td>
+      <td>0.002629</td>
+      <td>-0.137970</td>
+      <td>0.114860</td>
+      <td>-0.002971</td>
+      <td>-0.102590</td>
+      <td>0.097635</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-0.932288</td>
+      <td>-0.933720</td>
+      <td>-0.931480</td>
+      <td>0.330271</td>
+      <td>0.32661</td>
+      <td>0.33227</td>
+      <td>0.043416</td>
+      <td>0.042283</td>
+      <td>0.044053</td>
+      <td>-0.140968</td>
+      <td>...</td>
+      <td>-3.6473</td>
+      <td>0.010602</td>
+      <td>-0.131980</td>
+      <td>0.284850</td>
+      <td>0.014625</td>
+      <td>-0.041890</td>
+      <td>0.084099</td>
+      <td>-0.036900</td>
+      <td>-0.105560</td>
+      <td>0.037424</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-0.230186</td>
+      <td>-0.231410</td>
+      <td>-0.227130</td>
+      <td>0.961448</td>
+      <td>0.96109</td>
+      <td>0.96217</td>
+      <td>0.144340</td>
+      <td>0.143560</td>
+      <td>0.145110</td>
+      <td>-0.042394</td>
+      <td>...</td>
+      <td>-2.1986</td>
+      <td>-0.003484</td>
+      <td>-0.302820</td>
+      <td>0.250240</td>
+      <td>0.009079</td>
+      <td>-0.161160</td>
+      <td>0.154590</td>
+      <td>-0.026607</td>
+      <td>-0.283060</td>
+      <td>0.138020</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.164661</td>
+      <td>0.163320</td>
+      <td>0.167500</td>
+      <td>0.975293</td>
+      <td>0.97485</td>
+      <td>0.97551</td>
+      <td>0.146153</td>
+      <td>0.145820</td>
+      <td>0.146490</td>
+      <td>0.018096</td>
+      <td>...</td>
+      <td>-7.8266</td>
+      <td>0.004221</td>
+      <td>-0.046763</td>
+      <td>0.066896</td>
+      <td>-0.006815</td>
+      <td>-0.027883</td>
+      <td>0.015618</td>
+      <td>0.026272</td>
+      <td>-0.030321</td>
+      <td>0.081661</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.253600</td>
+      <td>-0.269380</td>
+      <td>-0.236370</td>
+      <td>0.955712</td>
+      <td>0.95150</td>
+      <td>0.96018</td>
+      <td>0.142326</td>
+      <td>0.141120</td>
+      <td>0.143060</td>
+      <td>-0.044067</td>
+      <td>...</td>
+      <td>-8.9277</td>
+      <td>0.005279</td>
+      <td>-0.029431</td>
+      <td>0.052902</td>
+      <td>0.069537</td>
+      <td>0.054452</td>
+      <td>0.091660</td>
+      <td>-0.211458</td>
+      <td>-0.240100</td>
+      <td>-0.164500</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 30 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg_test</span><span class="p">[</span><span class="s1">&#39;prediction&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">df_agg_test</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg_test</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="3" halign="left">orientation_X</th>
+      <th colspan="3" halign="left">orientation_Y</th>
+      <th colspan="3" halign="left">orientation_Z</th>
+      <th>orientation_W</th>
+      <th>...</th>
+      <th colspan="3" halign="left">angular_velocity_X</th>
+      <th colspan="3" halign="left">angular_velocity_Y</th>
+      <th colspan="3" halign="left">angular_velocity_Z</th>
+      <th>prediction</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>...</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>min</th>
+      <th>max</th>
+      <th></th>
+    </tr>
+    <tr>
+      <th>series_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>-0.025810</td>
+      <td>-0.026418</td>
+      <td>-0.025156</td>
+      <td>-0.988644</td>
+      <td>-0.98873</td>
+      <td>-0.98854</td>
+      <td>-0.148006</td>
+      <td>-0.148720</td>
+      <td>-0.147480</td>
+      <td>0.003147</td>
+      <td>...</td>
+      <td>0.000994</td>
+      <td>-0.225610</td>
+      <td>0.231270</td>
+      <td>0.002629</td>
+      <td>-0.137970</td>
+      <td>0.114860</td>
+      <td>-0.002971</td>
+      <td>-0.102590</td>
+      <td>0.097635</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-0.932288</td>
+      <td>-0.933720</td>
+      <td>-0.931480</td>
+      <td>0.330271</td>
+      <td>0.32661</td>
+      <td>0.33227</td>
+      <td>0.043416</td>
+      <td>0.042283</td>
+      <td>0.044053</td>
+      <td>-0.140968</td>
+      <td>...</td>
+      <td>0.010602</td>
+      <td>-0.131980</td>
+      <td>0.284850</td>
+      <td>0.014625</td>
+      <td>-0.041890</td>
+      <td>0.084099</td>
+      <td>-0.036900</td>
+      <td>-0.105560</td>
+      <td>0.037424</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-0.230186</td>
+      <td>-0.231410</td>
+      <td>-0.227130</td>
+      <td>0.961448</td>
+      <td>0.96109</td>
+      <td>0.96217</td>
+      <td>0.144340</td>
+      <td>0.143560</td>
+      <td>0.145110</td>
+      <td>-0.042394</td>
+      <td>...</td>
+      <td>-0.003484</td>
+      <td>-0.302820</td>
+      <td>0.250240</td>
+      <td>0.009079</td>
+      <td>-0.161160</td>
+      <td>0.154590</td>
+      <td>-0.026607</td>
+      <td>-0.283060</td>
+      <td>0.138020</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.164661</td>
+      <td>0.163320</td>
+      <td>0.167500</td>
+      <td>0.975293</td>
+      <td>0.97485</td>
+      <td>0.97551</td>
+      <td>0.146153</td>
+      <td>0.145820</td>
+      <td>0.146490</td>
+      <td>0.018096</td>
+      <td>...</td>
+      <td>0.004221</td>
+      <td>-0.046763</td>
+      <td>0.066896</td>
+      <td>-0.006815</td>
+      <td>-0.027883</td>
+      <td>0.015618</td>
+      <td>0.026272</td>
+      <td>-0.030321</td>
+      <td>0.081661</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.253600</td>
+      <td>-0.269380</td>
+      <td>-0.236370</td>
+      <td>0.955712</td>
+      <td>0.95150</td>
+      <td>0.96018</td>
+      <td>0.142326</td>
+      <td>0.141120</td>
+      <td>0.143060</td>
+      <td>-0.044067</td>
+      <td>...</td>
+      <td>0.005279</td>
+      <td>-0.029431</td>
+      <td>0.052902</td>
+      <td>0.069537</td>
+      <td>0.054452</td>
+      <td>0.091660</td>
+      <td>-0.211458</td>
+      <td>-0.240100</td>
+      <td>-0.164500</td>
+      <td>6</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 31 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg_test</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">df_agg_test</span><span class="p">[</span><span class="s1">&#39;prediction&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>C:\Users\UI774014\AppData\Local\Continuum\anaconda3\lib\site-packages\sklearn\preprocessing\label.py:151: DeprecationWarning: The truth value of an empty array is ambiguous. Returning False, but in future this will result in an error. Use `array.size &gt; 0` to check that an array is not empty.
+  if diff:
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_agg_test</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;submission.csv&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="willbreeden/ds-blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/ds-blog/fastpages/jupyter/2020/07/07/Robots.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/ds-blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/ds-blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/ds-blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>My Data Science Journey</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/fastai" title="fastai"><svg class="svg-icon grey"><use xlink:href="/ds-blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/fastdotai" title="fastdotai"><svg class="svg-icon grey"><use xlink:href="/ds-blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

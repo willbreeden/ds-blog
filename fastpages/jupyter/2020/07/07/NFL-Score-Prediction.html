@@ -1,0 +1,6044 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>NFL Score Prediction | Will Breeden’s Data Science Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="NFL Score Prediction" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Prediction how many points each team will score in a game" />
+<meta property="og:description" content="Prediction how many points each team will score in a game" />
+<link rel="canonical" href="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html" />
+<meta property="og:url" content="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html" />
+<meta property="og:site_name" content="Will Breeden’s Data Science Blog" />
+<meta property="og:image" content="https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-07T00:00:00-05:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html"},"description":"Prediction how many points each team will score in a game","@type":"BlogPosting","url":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html","headline":"NFL Score Prediction","dateModified":"2020-07-07T00:00:00-05:00","datePublished":"2020-07-07T00:00:00-05:00","image":"https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/ds-blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://willbreeden.github.io/ds-blog/feed.xml" title="Will Breeden's Data Science Blog" /><link rel="shortcut icon" type="image/x-icon" href="/ds-blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>NFL Score Prediction | Will Breeden’s Data Science Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="NFL Score Prediction" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Prediction how many points each team will score in a game" />
+<meta property="og:description" content="Prediction how many points each team will score in a game" />
+<link rel="canonical" href="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html" />
+<meta property="og:url" content="https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html" />
+<meta property="og:site_name" content="Will Breeden’s Data Science Blog" />
+<meta property="og:image" content="https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-07T00:00:00-05:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html"},"description":"Prediction how many points each team will score in a game","@type":"BlogPosting","url":"https://willbreeden.github.io/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html","headline":"NFL Score Prediction","dateModified":"2020-07-07T00:00:00-05:00","datePublished":"2020-07-07T00:00:00-05:00","image":"https://willbreeden.github.io/ds-blog/images/some_folder/your_image.png","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://willbreeden.github.io/ds-blog/feed.xml" title="Will Breeden's Data Science Blog" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+<script type="text/javascript">
+require.config({
+  paths: {
+    jquery: 'https://code.jquery.com/jquery-3.5.0.min',
+    plotly: 'https://cdn.plot.ly/plotly-latest.min'
+  },
+
+  shim: {
+    plotly: {
+      deps: ['jquery'],
+      exports: 'plotly'
+    }
+  }
+});
+</script>
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/ds-blog/">Will Breeden&#39;s Data Science Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/ds-blog/about/">About Me</a><a class="page-link" href="/ds-blog/search/">Search</a><a class="page-link" href="/ds-blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">NFL Score Prediction</h1><p class="page-description">Prediction how many points each team will score in a game</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-07-07T00:00:00-05:00" itemprop="datePublished">
+        Jul 7, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      25 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/ds-blog/categories/#fastpages">fastpages</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/ds-blog/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/willbreeden/ds-blog/tree/master/_notebooks/2020-07-07-NFL Score Prediction.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/ds-blog/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/willbreeden/ds-blog/master?filepath=_notebooks%2F2020-07-07-NFL+Score+Prediction.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/ds-blog/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/willbreeden/ds-blog/blob/master/_notebooks/2020-07-07-NFL Score Prediction.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/ds-blog/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-07-07-NFL Score Prediction.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This is a work in progress, something fun to do for a sport I'm interested in. Go Browns!</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;C:/NFL Prediction/Data Raw/season18.csv&quot;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>home</th>
+      <th>away</th>
+      <th>homescore</th>
+      <th>awayscore</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>PHI</td>
+      <td>ATL</td>
+      <td>18</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018090900</td>
+      <td>2018-09-09</td>
+      <td>BAL</td>
+      <td>BUF</td>
+      <td>47</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018090907</td>
+      <td>2018-09-09</td>
+      <td>NYG</td>
+      <td>JAX</td>
+      <td>15</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018090906</td>
+      <td>2018-09-09</td>
+      <td>NO</td>
+      <td>TB</td>
+      <td>40</td>
+      <td>48</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018090905</td>
+      <td>2018-09-09</td>
+      <td>NE</td>
+      <td>HOU</td>
+      <td>27</td>
+      <td>20</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Work-out-who-won-each-game-and-create-a-record-for-each-game-and-team-combination">Work out who won each game and create a record for each game and team combination<a class="anchor-link" href="#Work-out-who-won-each-game-and-create-a-record-for-each-game-and-team-combination"> </a></h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;homewin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;homescore&#39;</span><span class="p">]</span><span class="o">&gt;</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;awayscore&#39;</span><span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;awaywin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;homescore&#39;</span><span class="p">]</span><span class="o">&lt;</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;awayscore&#39;</span><span class="p">],</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>home</th>
+      <th>away</th>
+      <th>homescore</th>
+      <th>awayscore</th>
+      <th>homewin</th>
+      <th>awaywin</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>PHI</td>
+      <td>ATL</td>
+      <td>18</td>
+      <td>12</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018090900</td>
+      <td>2018-09-09</td>
+      <td>BAL</td>
+      <td>BUF</td>
+      <td>47</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018090907</td>
+      <td>2018-09-09</td>
+      <td>NYG</td>
+      <td>JAX</td>
+      <td>15</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018090906</td>
+      <td>2018-09-09</td>
+      <td>NO</td>
+      <td>TB</td>
+      <td>40</td>
+      <td>48</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018090905</td>
+      <td>2018-09-09</td>
+      <td>NE</td>
+      <td>HOU</td>
+      <td>27</td>
+      <td>20</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">home</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;awaywin&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">home</span> <span class="o">=</span> <span class="n">home</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;home&#39;</span><span class="p">:</span><span class="s1">&#39;team&#39;</span><span class="p">,</span><span class="s1">&#39;homescore&#39;</span><span class="p">:</span><span class="s1">&#39;PF&#39;</span><span class="p">,</span><span class="s1">&#39;awayscore&#39;</span><span class="p">:</span><span class="s1">&#39;PA&#39;</span><span class="p">,</span><span class="s1">&#39;homewin&#39;</span><span class="p">:</span><span class="s1">&#39;win&#39;</span><span class="p">,</span><span class="s1">&#39;away&#39;</span><span class="p">:</span><span class="s1">&#39;opponent&#39;</span><span class="p">})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">home</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>team</th>
+      <th>opponent</th>
+      <th>PF</th>
+      <th>PA</th>
+      <th>win</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>PHI</td>
+      <td>ATL</td>
+      <td>18</td>
+      <td>12</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018090900</td>
+      <td>2018-09-09</td>
+      <td>BAL</td>
+      <td>BUF</td>
+      <td>47</td>
+      <td>3</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018090907</td>
+      <td>2018-09-09</td>
+      <td>NYG</td>
+      <td>JAX</td>
+      <td>15</td>
+      <td>20</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018090906</td>
+      <td>2018-09-09</td>
+      <td>NO</td>
+      <td>TB</td>
+      <td>40</td>
+      <td>48</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018090905</td>
+      <td>2018-09-09</td>
+      <td>NE</td>
+      <td>HOU</td>
+      <td>27</td>
+      <td>20</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">home</span><span class="p">[</span><span class="s1">&#39;hometeam&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> 
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">home</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>team</th>
+      <th>opponent</th>
+      <th>PF</th>
+      <th>PA</th>
+      <th>win</th>
+      <th>hometeam</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>252</th>
+      <td>2018123000</td>
+      <td>2018-12-30</td>
+      <td>BAL</td>
+      <td>CLE</td>
+      <td>26</td>
+      <td>24</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>253</th>
+      <td>2018123014</td>
+      <td>2018-12-30</td>
+      <td>LA</td>
+      <td>SF</td>
+      <td>48</td>
+      <td>32</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>254</th>
+      <td>2018123009</td>
+      <td>2018-12-30</td>
+      <td>PIT</td>
+      <td>CIN</td>
+      <td>16</td>
+      <td>13</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>255</th>
+      <td>2018123015</td>
+      <td>2018-12-30</td>
+      <td>SEA</td>
+      <td>ARI</td>
+      <td>27</td>
+      <td>24</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>256</th>
+      <td>2018123011</td>
+      <td>2018-12-30</td>
+      <td>TEN</td>
+      <td>IND</td>
+      <td>17</td>
+      <td>33</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">away</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;homewin&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">away</span> <span class="o">=</span> <span class="n">away</span><span class="p">[[</span><span class="s1">&#39;GameID&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">,</span><span class="s1">&#39;away&#39;</span><span class="p">,</span><span class="s1">&#39;home&#39;</span><span class="p">,</span><span class="s1">&#39;awayscore&#39;</span><span class="p">,</span><span class="s1">&#39;homescore&#39;</span><span class="p">,</span><span class="s1">&#39;awaywin&#39;</span><span class="p">]]</span>
+<span class="n">away</span> <span class="o">=</span> <span class="n">away</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;away&#39;</span><span class="p">:</span><span class="s1">&#39;team&#39;</span><span class="p">,</span><span class="s1">&#39;awayscore&#39;</span><span class="p">:</span><span class="s1">&#39;PF&#39;</span><span class="p">,</span><span class="s1">&#39;homescore&#39;</span><span class="p">:</span><span class="s1">&#39;PA&#39;</span><span class="p">,</span><span class="s1">&#39;awaywin&#39;</span><span class="p">:</span><span class="s1">&#39;win&#39;</span><span class="p">,</span><span class="s1">&#39;home&#39;</span><span class="p">:</span><span class="s1">&#39;opponent&#39;</span><span class="p">})</span>
+<span class="n">away</span><span class="p">[</span><span class="s1">&#39;hometeam&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">away</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>team</th>
+      <th>opponent</th>
+      <th>PF</th>
+      <th>PA</th>
+      <th>win</th>
+      <th>hometeam</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>ATL</td>
+      <td>PHI</td>
+      <td>12</td>
+      <td>18</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018090900</td>
+      <td>2018-09-09</td>
+      <td>BUF</td>
+      <td>BAL</td>
+      <td>3</td>
+      <td>47</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018090907</td>
+      <td>2018-09-09</td>
+      <td>JAX</td>
+      <td>NYG</td>
+      <td>20</td>
+      <td>15</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018090906</td>
+      <td>2018-09-09</td>
+      <td>TB</td>
+      <td>NO</td>
+      <td>48</td>
+      <td>40</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018090905</td>
+      <td>2018-09-09</td>
+      <td>HOU</td>
+      <td>NE</td>
+      <td>20</td>
+      <td>27</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">home</span><span class="p">,</span><span class="n">away</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(512, 8)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;team&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>team</th>
+      <th>opponent</th>
+      <th>PF</th>
+      <th>PA</th>
+      <th>win</th>
+      <th>hometeam</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2018090909</td>
+      <td>2018-09-09</td>
+      <td>ARI</td>
+      <td>WAS</td>
+      <td>6</td>
+      <td>24</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2018091609</td>
+      <td>2018-09-16</td>
+      <td>ARI</td>
+      <td>LA</td>
+      <td>0</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018092311</td>
+      <td>2018-09-23</td>
+      <td>ARI</td>
+      <td>CHI</td>
+      <td>14</td>
+      <td>16</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018093008</td>
+      <td>2018-09-30</td>
+      <td>ARI</td>
+      <td>SEA</td>
+      <td>17</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018100710</td>
+      <td>2018-10-07</td>
+      <td>ARI</td>
+      <td>SF</td>
+      <td>28</td>
+      <td>18</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-moving-average-score-variables">Create moving average score variables<a class="anchor-link" href="#Create-moving-average-score-variables"> </a></h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ma1</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="s1">&#39;PF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">()</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">ma2</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="s1">&#39;PF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">()</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">ma3</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="s1">&#39;PF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">()</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores</span><span class="p">[</span><span class="s1">&#39;score1MA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ma1</span><span class="p">[</span><span class="s1">&#39;PF&#39;</span><span class="p">]</span>
+<span class="n">scores</span><span class="p">[</span><span class="s1">&#39;score2MA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ma2</span><span class="p">[</span><span class="s1">&#39;PF&#39;</span><span class="p">]</span>
+<span class="n">scores</span><span class="p">[</span><span class="s1">&#39;score3MA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ma3</span><span class="p">[</span><span class="s1">&#39;PF&#39;</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>team</th>
+      <th>opponent</th>
+      <th>PF</th>
+      <th>PA</th>
+      <th>win</th>
+      <th>hometeam</th>
+      <th>score1MA</th>
+      <th>score2MA</th>
+      <th>score3MA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2018090909</td>
+      <td>2018-09-09</td>
+      <td>ARI</td>
+      <td>WAS</td>
+      <td>6</td>
+      <td>24</td>
+      <td>0</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2018091609</td>
+      <td>2018-09-16</td>
+      <td>ARI</td>
+      <td>LA</td>
+      <td>0</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018092311</td>
+      <td>2018-09-23</td>
+      <td>ARI</td>
+      <td>CHI</td>
+      <td>14</td>
+      <td>16</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018093008</td>
+      <td>2018-09-30</td>
+      <td>ARI</td>
+      <td>SEA</td>
+      <td>17</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1</td>
+      <td>14.0</td>
+      <td>7.0</td>
+      <td>6.666667</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018100710</td>
+      <td>2018-10-07</td>
+      <td>ARI</td>
+      <td>SF</td>
+      <td>28</td>
+      <td>18</td>
+      <td>1</td>
+      <td>0</td>
+      <td>17.0</td>
+      <td>15.5</td>
+      <td>10.333333</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018101405</td>
+      <td>2018-10-14</td>
+      <td>ARI</td>
+      <td>MIN</td>
+      <td>17</td>
+      <td>27</td>
+      <td>0</td>
+      <td>0</td>
+      <td>28.0</td>
+      <td>22.5</td>
+      <td>19.666667</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2018101800</td>
+      <td>2018-10-18</td>
+      <td>ARI</td>
+      <td>DEN</td>
+      <td>10</td>
+      <td>45</td>
+      <td>0</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>22.5</td>
+      <td>20.666667</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2018102809</td>
+      <td>2018-10-28</td>
+      <td>ARI</td>
+      <td>SF</td>
+      <td>18</td>
+      <td>15</td>
+      <td>1</td>
+      <td>1</td>
+      <td>10.0</td>
+      <td>13.5</td>
+      <td>18.333333</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2018111105</td>
+      <td>2018-11-11</td>
+      <td>ARI</td>
+      <td>KC</td>
+      <td>14</td>
+      <td>26</td>
+      <td>0</td>
+      <td>0</td>
+      <td>18.0</td>
+      <td>14.0</td>
+      <td>15.000000</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2018111807</td>
+      <td>2018-11-18</td>
+      <td>ARI</td>
+      <td>OAK</td>
+      <td>21</td>
+      <td>23</td>
+      <td>0</td>
+      <td>1</td>
+      <td>14.0</td>
+      <td>16.0</td>
+      <td>14.000000</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2018112508</td>
+      <td>2018-11-25</td>
+      <td>ARI</td>
+      <td>LAC</td>
+      <td>10</td>
+      <td>45</td>
+      <td>0</td>
+      <td>0</td>
+      <td>21.0</td>
+      <td>17.5</td>
+      <td>17.666667</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2018120203</td>
+      <td>2018-12-02</td>
+      <td>ARI</td>
+      <td>GB</td>
+      <td>20</td>
+      <td>17</td>
+      <td>1</td>
+      <td>0</td>
+      <td>10.0</td>
+      <td>15.5</td>
+      <td>15.000000</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>2018120911</td>
+      <td>2018-12-09</td>
+      <td>ARI</td>
+      <td>DET</td>
+      <td>3</td>
+      <td>17</td>
+      <td>0</td>
+      <td>1</td>
+      <td>20.0</td>
+      <td>15.0</td>
+      <td>17.000000</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>2018121600</td>
+      <td>2018-12-16</td>
+      <td>ARI</td>
+      <td>ATL</td>
+      <td>14</td>
+      <td>40</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3.0</td>
+      <td>11.5</td>
+      <td>11.000000</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>2018122311</td>
+      <td>2018-12-23</td>
+      <td>ARI</td>
+      <td>LA</td>
+      <td>9</td>
+      <td>31</td>
+      <td>0</td>
+      <td>1</td>
+      <td>14.0</td>
+      <td>8.5</td>
+      <td>12.333333</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>2018123015</td>
+      <td>2018-12-30</td>
+      <td>ARI</td>
+      <td>SEA</td>
+      <td>24</td>
+      <td>27</td>
+      <td>0</td>
+      <td>0</td>
+      <td>9.0</td>
+      <td>11.5</td>
+      <td>8.666667</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>ATL</td>
+      <td>PHI</td>
+      <td>12</td>
+      <td>18</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2018091600</td>
+      <td>2018-09-16</td>
+      <td>ATL</td>
+      <td>CAR</td>
+      <td>31</td>
+      <td>24</td>
+      <td>1</td>
+      <td>1</td>
+      <td>12.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>2018092300</td>
+      <td>2018-09-23</td>
+      <td>ATL</td>
+      <td>NO</td>
+      <td>37</td>
+      <td>43</td>
+      <td>0</td>
+      <td>1</td>
+      <td>31.0</td>
+      <td>21.5</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>2018093000</td>
+      <td>2018-09-30</td>
+      <td>ATL</td>
+      <td>CIN</td>
+      <td>36</td>
+      <td>37</td>
+      <td>0</td>
+      <td>1</td>
+      <td>37.0</td>
+      <td>34.0</td>
+      <td>26.666667</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>2018100707</td>
+      <td>2018-10-07</td>
+      <td>ATL</td>
+      <td>PIT</td>
+      <td>17</td>
+      <td>41</td>
+      <td>0</td>
+      <td>0</td>
+      <td>36.0</td>
+      <td>36.5</td>
+      <td>34.666667</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>2018101400</td>
+      <td>2018-10-14</td>
+      <td>ATL</td>
+      <td>TB</td>
+      <td>34</td>
+      <td>29</td>
+      <td>1</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>26.5</td>
+      <td>30.000000</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>2018102200</td>
+      <td>2018-10-22</td>
+      <td>ATL</td>
+      <td>NYG</td>
+      <td>23</td>
+      <td>20</td>
+      <td>1</td>
+      <td>1</td>
+      <td>34.0</td>
+      <td>25.5</td>
+      <td>29.000000</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>2018110406</td>
+      <td>2018-11-04</td>
+      <td>ATL</td>
+      <td>WAS</td>
+      <td>38</td>
+      <td>14</td>
+      <td>1</td>
+      <td>0</td>
+      <td>23.0</td>
+      <td>28.5</td>
+      <td>24.666667</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>2018111102</td>
+      <td>2018-11-11</td>
+      <td>ATL</td>
+      <td>CLE</td>
+      <td>16</td>
+      <td>28</td>
+      <td>0</td>
+      <td>0</td>
+      <td>38.0</td>
+      <td>30.5</td>
+      <td>31.666667</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>2018111800</td>
+      <td>2018-11-18</td>
+      <td>ATL</td>
+      <td>DAL</td>
+      <td>19</td>
+      <td>22</td>
+      <td>0</td>
+      <td>1</td>
+      <td>16.0</td>
+      <td>27.0</td>
+      <td>25.666667</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>2018112202</td>
+      <td>2018-11-22</td>
+      <td>ATL</td>
+      <td>NO</td>
+      <td>17</td>
+      <td>31</td>
+      <td>0</td>
+      <td>0</td>
+      <td>19.0</td>
+      <td>17.5</td>
+      <td>24.333333</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>2018120200</td>
+      <td>2018-12-02</td>
+      <td>ATL</td>
+      <td>BAL</td>
+      <td>16</td>
+      <td>26</td>
+      <td>0</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>18.0</td>
+      <td>17.333333</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>2018120903</td>
+      <td>2018-12-09</td>
+      <td>ATL</td>
+      <td>GB</td>
+      <td>20</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+      <td>16.0</td>
+      <td>16.5</td>
+      <td>17.333333</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>2018121600</td>
+      <td>2018-12-16</td>
+      <td>ATL</td>
+      <td>ARI</td>
+      <td>40</td>
+      <td>14</td>
+      <td>1</td>
+      <td>1</td>
+      <td>20.0</td>
+      <td>18.0</td>
+      <td>17.666667</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>482</th>
+      <td>2018092304</td>
+      <td>2018-09-23</td>
+      <td>TEN</td>
+      <td>JAX</td>
+      <td>9</td>
+      <td>6</td>
+      <td>1</td>
+      <td>0</td>
+      <td>20.0</td>
+      <td>20.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>483</th>
+      <td>2018093007</td>
+      <td>2018-09-30</td>
+      <td>TEN</td>
+      <td>PHI</td>
+      <td>26</td>
+      <td>23</td>
+      <td>1</td>
+      <td>1</td>
+      <td>9.0</td>
+      <td>14.5</td>
+      <td>16.333333</td>
+    </tr>
+    <tr>
+      <th>484</th>
+      <td>2018100700</td>
+      <td>2018-10-07</td>
+      <td>TEN</td>
+      <td>BUF</td>
+      <td>12</td>
+      <td>13</td>
+      <td>0</td>
+      <td>0</td>
+      <td>26.0</td>
+      <td>17.5</td>
+      <td>18.333333</td>
+    </tr>
+    <tr>
+      <th>485</th>
+      <td>2018101411</td>
+      <td>2018-10-14</td>
+      <td>TEN</td>
+      <td>BAL</td>
+      <td>0</td>
+      <td>21</td>
+      <td>0</td>
+      <td>1</td>
+      <td>12.0</td>
+      <td>19.0</td>
+      <td>15.666667</td>
+    </tr>
+    <tr>
+      <th>486</th>
+      <td>2018102100</td>
+      <td>2018-10-21</td>
+      <td>TEN</td>
+      <td>LAC</td>
+      <td>19</td>
+      <td>20</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>6.0</td>
+      <td>12.666667</td>
+    </tr>
+    <tr>
+      <th>487</th>
+      <td>2018110500</td>
+      <td>2018-11-05</td>
+      <td>TEN</td>
+      <td>DAL</td>
+      <td>28</td>
+      <td>14</td>
+      <td>1</td>
+      <td>0</td>
+      <td>19.0</td>
+      <td>9.5</td>
+      <td>10.333333</td>
+    </tr>
+    <tr>
+      <th>488</th>
+      <td>2018111108</td>
+      <td>2018-11-11</td>
+      <td>TEN</td>
+      <td>NE</td>
+      <td>34</td>
+      <td>10</td>
+      <td>1</td>
+      <td>1</td>
+      <td>28.0</td>
+      <td>23.5</td>
+      <td>15.666667</td>
+    </tr>
+    <tr>
+      <th>489</th>
+      <td>2018111804</td>
+      <td>2018-11-18</td>
+      <td>TEN</td>
+      <td>IND</td>
+      <td>10</td>
+      <td>38</td>
+      <td>0</td>
+      <td>0</td>
+      <td>34.0</td>
+      <td>31.0</td>
+      <td>27.000000</td>
+    </tr>
+    <tr>
+      <th>490</th>
+      <td>2018112600</td>
+      <td>2018-11-26</td>
+      <td>TEN</td>
+      <td>HOU</td>
+      <td>17</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10.0</td>
+      <td>22.0</td>
+      <td>24.000000</td>
+    </tr>
+    <tr>
+      <th>491</th>
+      <td>2018120211</td>
+      <td>2018-12-02</td>
+      <td>TEN</td>
+      <td>NYJ</td>
+      <td>26</td>
+      <td>22</td>
+      <td>1</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>13.5</td>
+      <td>20.333333</td>
+    </tr>
+    <tr>
+      <th>492</th>
+      <td>2018120600</td>
+      <td>2018-12-06</td>
+      <td>TEN</td>
+      <td>JAX</td>
+      <td>30</td>
+      <td>9</td>
+      <td>1</td>
+      <td>1</td>
+      <td>26.0</td>
+      <td>21.5</td>
+      <td>17.666667</td>
+    </tr>
+    <tr>
+      <th>493</th>
+      <td>2018121608</td>
+      <td>2018-12-16</td>
+      <td>TEN</td>
+      <td>NYG</td>
+      <td>17</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>30.0</td>
+      <td>28.0</td>
+      <td>24.333333</td>
+    </tr>
+    <tr>
+      <th>494</th>
+      <td>2018122200</td>
+      <td>2018-12-22</td>
+      <td>TEN</td>
+      <td>WAS</td>
+      <td>25</td>
+      <td>16</td>
+      <td>1</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>23.5</td>
+      <td>24.333333</td>
+    </tr>
+    <tr>
+      <th>495</th>
+      <td>2018123011</td>
+      <td>2018-12-30</td>
+      <td>TEN</td>
+      <td>IND</td>
+      <td>17</td>
+      <td>33</td>
+      <td>0</td>
+      <td>1</td>
+      <td>25.0</td>
+      <td>21.0</td>
+      <td>24.000000</td>
+    </tr>
+    <tr>
+      <th>496</th>
+      <td>2018090909</td>
+      <td>2018-09-09</td>
+      <td>WAS</td>
+      <td>ARI</td>
+      <td>24</td>
+      <td>6</td>
+      <td>1</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>497</th>
+      <td>2018091608</td>
+      <td>2018-09-16</td>
+      <td>WAS</td>
+      <td>IND</td>
+      <td>9</td>
+      <td>21</td>
+      <td>0</td>
+      <td>1</td>
+      <td>24.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>498</th>
+      <td>2018092309</td>
+      <td>2018-09-23</td>
+      <td>WAS</td>
+      <td>GB</td>
+      <td>31</td>
+      <td>17</td>
+      <td>1</td>
+      <td>1</td>
+      <td>9.0</td>
+      <td>16.5</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>499</th>
+      <td>2018100800</td>
+      <td>2018-10-08</td>
+      <td>WAS</td>
+      <td>NO</td>
+      <td>19</td>
+      <td>43</td>
+      <td>0</td>
+      <td>0</td>
+      <td>31.0</td>
+      <td>20.0</td>
+      <td>21.333333</td>
+    </tr>
+    <tr>
+      <th>500</th>
+      <td>2018101408</td>
+      <td>2018-10-14</td>
+      <td>WAS</td>
+      <td>CAR</td>
+      <td>23</td>
+      <td>17</td>
+      <td>1</td>
+      <td>1</td>
+      <td>19.0</td>
+      <td>25.0</td>
+      <td>19.666667</td>
+    </tr>
+    <tr>
+      <th>501</th>
+      <td>2018102110</td>
+      <td>2018-10-21</td>
+      <td>WAS</td>
+      <td>DAL</td>
+      <td>20</td>
+      <td>17</td>
+      <td>1</td>
+      <td>1</td>
+      <td>23.0</td>
+      <td>21.0</td>
+      <td>24.333333</td>
+    </tr>
+    <tr>
+      <th>502</th>
+      <td>2018102806</td>
+      <td>2018-10-28</td>
+      <td>WAS</td>
+      <td>NYG</td>
+      <td>20</td>
+      <td>13</td>
+      <td>1</td>
+      <td>0</td>
+      <td>20.0</td>
+      <td>21.5</td>
+      <td>20.666667</td>
+    </tr>
+    <tr>
+      <th>503</th>
+      <td>2018110406</td>
+      <td>2018-11-04</td>
+      <td>WAS</td>
+      <td>ATL</td>
+      <td>14</td>
+      <td>38</td>
+      <td>0</td>
+      <td>1</td>
+      <td>20.0</td>
+      <td>20.0</td>
+      <td>21.000000</td>
+    </tr>
+    <tr>
+      <th>504</th>
+      <td>2018111107</td>
+      <td>2018-11-11</td>
+      <td>WAS</td>
+      <td>TB</td>
+      <td>16</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>14.0</td>
+      <td>17.0</td>
+      <td>18.000000</td>
+    </tr>
+    <tr>
+      <th>505</th>
+      <td>2018111806</td>
+      <td>2018-11-18</td>
+      <td>WAS</td>
+      <td>HOU</td>
+      <td>21</td>
+      <td>23</td>
+      <td>0</td>
+      <td>1</td>
+      <td>16.0</td>
+      <td>15.0</td>
+      <td>16.666667</td>
+    </tr>
+    <tr>
+      <th>506</th>
+      <td>2018112201</td>
+      <td>2018-11-22</td>
+      <td>WAS</td>
+      <td>DAL</td>
+      <td>23</td>
+      <td>31</td>
+      <td>0</td>
+      <td>0</td>
+      <td>21.0</td>
+      <td>18.5</td>
+      <td>17.000000</td>
+    </tr>
+    <tr>
+      <th>507</th>
+      <td>2018120300</td>
+      <td>2018-12-03</td>
+      <td>WAS</td>
+      <td>PHI</td>
+      <td>13</td>
+      <td>28</td>
+      <td>0</td>
+      <td>0</td>
+      <td>23.0</td>
+      <td>22.0</td>
+      <td>20.000000</td>
+    </tr>
+    <tr>
+      <th>508</th>
+      <td>2018120908</td>
+      <td>2018-12-09</td>
+      <td>WAS</td>
+      <td>NYG</td>
+      <td>16</td>
+      <td>40</td>
+      <td>0</td>
+      <td>1</td>
+      <td>13.0</td>
+      <td>18.0</td>
+      <td>19.000000</td>
+    </tr>
+    <tr>
+      <th>509</th>
+      <td>2018121606</td>
+      <td>2018-12-16</td>
+      <td>WAS</td>
+      <td>JAX</td>
+      <td>16</td>
+      <td>13</td>
+      <td>1</td>
+      <td>0</td>
+      <td>16.0</td>
+      <td>14.5</td>
+      <td>17.333333</td>
+    </tr>
+    <tr>
+      <th>510</th>
+      <td>2018122200</td>
+      <td>2018-12-22</td>
+      <td>WAS</td>
+      <td>TEN</td>
+      <td>16</td>
+      <td>25</td>
+      <td>0</td>
+      <td>0</td>
+      <td>16.0</td>
+      <td>16.0</td>
+      <td>15.000000</td>
+    </tr>
+    <tr>
+      <th>511</th>
+      <td>2018123012</td>
+      <td>2018-12-30</td>
+      <td>WAS</td>
+      <td>PHI</td>
+      <td>0</td>
+      <td>24</td>
+      <td>0</td>
+      <td>1</td>
+      <td>16.0</td>
+      <td>16.0</td>
+      <td>16.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>512 rows × 11 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores_2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span><span class="n">scores</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GameID&#39;</span><span class="p">,</span><span class="s1">&#39;opponent&#39;</span><span class="p">],</span> <span class="n">right_on</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GameID&#39;</span><span class="p">,</span><span class="s1">&#39;team&#39;</span><span class="p">],</span> <span class="n">suffixes</span><span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;_opponent&quot;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores_2</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>team</th>
+      <th>opponent</th>
+      <th>PF</th>
+      <th>PA</th>
+      <th>win</th>
+      <th>hometeam</th>
+      <th>score1MA</th>
+      <th>score2MA</th>
+      <th>...</th>
+      <th>date_opponent</th>
+      <th>team_opponent</th>
+      <th>opponent_opponent</th>
+      <th>PF_opponent</th>
+      <th>PA_opponent</th>
+      <th>win_opponent</th>
+      <th>hometeam_opponent</th>
+      <th>score1MA_opponent</th>
+      <th>score2MA_opponent</th>
+      <th>score3MA_opponent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2018090909</td>
+      <td>2018-09-09</td>
+      <td>ARI</td>
+      <td>WAS</td>
+      <td>6</td>
+      <td>24</td>
+      <td>0</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>2018-09-09</td>
+      <td>WAS</td>
+      <td>ARI</td>
+      <td>24</td>
+      <td>6</td>
+      <td>1</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2018091609</td>
+      <td>2018-09-16</td>
+      <td>ARI</td>
+      <td>LA</td>
+      <td>0</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6.0</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>2018-09-16</td>
+      <td>LA</td>
+      <td>ARI</td>
+      <td>34</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>33.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018092311</td>
+      <td>2018-09-23</td>
+      <td>ARI</td>
+      <td>CHI</td>
+      <td>14</td>
+      <td>16</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>...</td>
+      <td>2018-09-23</td>
+      <td>CHI</td>
+      <td>ARI</td>
+      <td>16</td>
+      <td>14</td>
+      <td>1</td>
+      <td>0</td>
+      <td>24.0</td>
+      <td>23.5</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018093008</td>
+      <td>2018-09-30</td>
+      <td>ARI</td>
+      <td>SEA</td>
+      <td>17</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1</td>
+      <td>14.0</td>
+      <td>7.0</td>
+      <td>...</td>
+      <td>2018-09-30</td>
+      <td>SEA</td>
+      <td>ARI</td>
+      <td>20</td>
+      <td>17</td>
+      <td>1</td>
+      <td>0</td>
+      <td>24.0</td>
+      <td>20.5</td>
+      <td>21.666667</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018100710</td>
+      <td>2018-10-07</td>
+      <td>ARI</td>
+      <td>SF</td>
+      <td>28</td>
+      <td>18</td>
+      <td>1</td>
+      <td>0</td>
+      <td>17.0</td>
+      <td>15.5</td>
+      <td>...</td>
+      <td>2018-10-07</td>
+      <td>SF</td>
+      <td>ARI</td>
+      <td>18</td>
+      <td>28</td>
+      <td>0</td>
+      <td>1</td>
+      <td>27.0</td>
+      <td>27.0</td>
+      <td>28.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 21 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores_2</span> <span class="o">=</span> <span class="n">scores_2</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;date_opponent&#39;</span><span class="p">,</span><span class="s1">&#39;team_opponent&#39;</span><span class="p">,</span><span class="s1">&#39;opponent_opponent&#39;</span><span class="p">,</span><span class="s1">&#39;PF_opponent&#39;</span><span class="p">,</span><span class="s1">&#39;PA_opponent&#39;</span><span class="p">,</span><span class="s1">&#39;win_opponent&#39;</span><span class="p">,</span><span class="s1">&#39;hometeam_opponent&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-win-record-coming-into-the-game">Create win record coming into the game<a class="anchor-link" href="#Create-win-record-coming-into-the-game"> </a></h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;cum_wins&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="s1">&#39;win&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">())</span>
+<span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;cum_PF&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="s1">&#39;PF&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">())</span>
+<span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;cum_PA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)[</span><span class="s1">&#39;PA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">())</span>
+<span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;cum_games&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;team&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cumcount</span><span class="p">()</span>
+<span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;cum_wins&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;cum_wins&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;win_pct&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;cum_wins&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">scores_2</span><span class="p">[</span><span class="s1">&#39;cum_games&#39;</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores_2</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>team</th>
+      <th>opponent</th>
+      <th>PF</th>
+      <th>PA</th>
+      <th>win</th>
+      <th>hometeam</th>
+      <th>score1MA</th>
+      <th>score2MA</th>
+      <th>score3MA</th>
+      <th>score1MA_opponent</th>
+      <th>score2MA_opponent</th>
+      <th>score3MA_opponent</th>
+      <th>cum_wins</th>
+      <th>cum_games</th>
+      <th>win_pct</th>
+      <th>cum_PF</th>
+      <th>cum_PA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2018090909</td>
+      <td>2018-09-09</td>
+      <td>ARI</td>
+      <td>WAS</td>
+      <td>6</td>
+      <td>24</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2018091609</td>
+      <td>2018-09-16</td>
+      <td>ARI</td>
+      <td>LA</td>
+      <td>0</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>33.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>6.0</td>
+      <td>24.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018092311</td>
+      <td>2018-09-23</td>
+      <td>ARI</td>
+      <td>CHI</td>
+      <td>14</td>
+      <td>16</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.000000</td>
+      <td>24.0</td>
+      <td>23.5</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>2</td>
+      <td>0.000000</td>
+      <td>6.0</td>
+      <td>58.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018093008</td>
+      <td>2018-09-30</td>
+      <td>ARI</td>
+      <td>SEA</td>
+      <td>17</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1</td>
+      <td>14.0</td>
+      <td>7.0</td>
+      <td>6.666667</td>
+      <td>24.0</td>
+      <td>20.5</td>
+      <td>21.666667</td>
+      <td>0.0</td>
+      <td>3</td>
+      <td>0.000000</td>
+      <td>20.0</td>
+      <td>74.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018100710</td>
+      <td>2018-10-07</td>
+      <td>ARI</td>
+      <td>SF</td>
+      <td>28</td>
+      <td>18</td>
+      <td>1</td>
+      <td>0</td>
+      <td>17.0</td>
+      <td>15.5</td>
+      <td>10.333333</td>
+      <td>27.0</td>
+      <td>27.0</td>
+      <td>28.000000</td>
+      <td>0.0</td>
+      <td>4</td>
+      <td>0.000000</td>
+      <td>37.0</td>
+      <td>94.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018101405</td>
+      <td>2018-10-14</td>
+      <td>ARI</td>
+      <td>MIN</td>
+      <td>17</td>
+      <td>27</td>
+      <td>0</td>
+      <td>0</td>
+      <td>28.0</td>
+      <td>22.5</td>
+      <td>19.666667</td>
+      <td>23.0</td>
+      <td>27.0</td>
+      <td>20.000000</td>
+      <td>1.0</td>
+      <td>5</td>
+      <td>0.200000</td>
+      <td>65.0</td>
+      <td>112.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2018101800</td>
+      <td>2018-10-18</td>
+      <td>ARI</td>
+      <td>DEN</td>
+      <td>10</td>
+      <td>45</td>
+      <td>0</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>22.5</td>
+      <td>20.666667</td>
+      <td>20.0</td>
+      <td>18.0</td>
+      <td>19.666667</td>
+      <td>1.0</td>
+      <td>6</td>
+      <td>0.166667</td>
+      <td>82.0</td>
+      <td>139.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2018102809</td>
+      <td>2018-10-28</td>
+      <td>ARI</td>
+      <td>SF</td>
+      <td>18</td>
+      <td>15</td>
+      <td>1</td>
+      <td>1</td>
+      <td>10.0</td>
+      <td>13.5</td>
+      <td>18.333333</td>
+      <td>10.0</td>
+      <td>20.0</td>
+      <td>19.333333</td>
+      <td>1.0</td>
+      <td>7</td>
+      <td>0.142857</td>
+      <td>92.0</td>
+      <td>184.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2018111105</td>
+      <td>2018-11-11</td>
+      <td>ARI</td>
+      <td>KC</td>
+      <td>14</td>
+      <td>26</td>
+      <td>0</td>
+      <td>0</td>
+      <td>18.0</td>
+      <td>14.0</td>
+      <td>15.000000</td>
+      <td>37.0</td>
+      <td>33.5</td>
+      <td>37.333333</td>
+      <td>2.0</td>
+      <td>8</td>
+      <td>0.250000</td>
+      <td>110.0</td>
+      <td>199.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2018111807</td>
+      <td>2018-11-18</td>
+      <td>ARI</td>
+      <td>OAK</td>
+      <td>21</td>
+      <td>23</td>
+      <td>0</td>
+      <td>1</td>
+      <td>14.0</td>
+      <td>16.0</td>
+      <td>14.000000</td>
+      <td>6.0</td>
+      <td>4.5</td>
+      <td>12.333333</td>
+      <td>2.0</td>
+      <td>9</td>
+      <td>0.222222</td>
+      <td>124.0</td>
+      <td>225.0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2018112508</td>
+      <td>2018-11-25</td>
+      <td>ARI</td>
+      <td>LAC</td>
+      <td>10</td>
+      <td>45</td>
+      <td>0</td>
+      <td>0</td>
+      <td>21.0</td>
+      <td>17.5</td>
+      <td>17.666667</td>
+      <td>22.0</td>
+      <td>21.0</td>
+      <td>22.333333</td>
+      <td>2.0</td>
+      <td>10</td>
+      <td>0.200000</td>
+      <td>145.0</td>
+      <td>248.0</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2018120203</td>
+      <td>2018-12-02</td>
+      <td>ARI</td>
+      <td>GB</td>
+      <td>20</td>
+      <td>17</td>
+      <td>1</td>
+      <td>0</td>
+      <td>10.0</td>
+      <td>15.5</td>
+      <td>15.000000</td>
+      <td>17.0</td>
+      <td>20.5</td>
+      <td>24.000000</td>
+      <td>2.0</td>
+      <td>11</td>
+      <td>0.181818</td>
+      <td>155.0</td>
+      <td>293.0</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>2018120911</td>
+      <td>2018-12-09</td>
+      <td>ARI</td>
+      <td>DET</td>
+      <td>3</td>
+      <td>17</td>
+      <td>0</td>
+      <td>1</td>
+      <td>20.0</td>
+      <td>15.0</td>
+      <td>17.000000</td>
+      <td>16.0</td>
+      <td>16.0</td>
+      <td>17.333333</td>
+      <td>3.0</td>
+      <td>12</td>
+      <td>0.250000</td>
+      <td>175.0</td>
+      <td>310.0</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>2018121600</td>
+      <td>2018-12-16</td>
+      <td>ARI</td>
+      <td>ATL</td>
+      <td>14</td>
+      <td>40</td>
+      <td>0</td>
+      <td>0</td>
+      <td>3.0</td>
+      <td>11.5</td>
+      <td>11.000000</td>
+      <td>20.0</td>
+      <td>18.0</td>
+      <td>17.666667</td>
+      <td>3.0</td>
+      <td>13</td>
+      <td>0.230769</td>
+      <td>178.0</td>
+      <td>327.0</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>2018122311</td>
+      <td>2018-12-23</td>
+      <td>ARI</td>
+      <td>LA</td>
+      <td>9</td>
+      <td>31</td>
+      <td>0</td>
+      <td>1</td>
+      <td>14.0</td>
+      <td>8.5</td>
+      <td>12.333333</td>
+      <td>23.0</td>
+      <td>14.5</td>
+      <td>19.666667</td>
+      <td>3.0</td>
+      <td>14</td>
+      <td>0.214286</td>
+      <td>192.0</td>
+      <td>367.0</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>2018123015</td>
+      <td>2018-12-30</td>
+      <td>ARI</td>
+      <td>SEA</td>
+      <td>24</td>
+      <td>27</td>
+      <td>0</td>
+      <td>0</td>
+      <td>9.0</td>
+      <td>11.5</td>
+      <td>8.666667</td>
+      <td>38.0</td>
+      <td>30.5</td>
+      <td>27.333333</td>
+      <td>3.0</td>
+      <td>15</td>
+      <td>0.200000</td>
+      <td>201.0</td>
+      <td>398.0</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>ATL</td>
+      <td>PHI</td>
+      <td>12</td>
+      <td>18</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2018091600</td>
+      <td>2018-09-16</td>
+      <td>ATL</td>
+      <td>CAR</td>
+      <td>31</td>
+      <td>24</td>
+      <td>1</td>
+      <td>1</td>
+      <td>12.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>16.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>1</td>
+      <td>0.000000</td>
+      <td>12.0</td>
+      <td>18.0</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>2018092300</td>
+      <td>2018-09-23</td>
+      <td>ATL</td>
+      <td>NO</td>
+      <td>37</td>
+      <td>43</td>
+      <td>0</td>
+      <td>1</td>
+      <td>31.0</td>
+      <td>21.5</td>
+      <td>0.000000</td>
+      <td>21.0</td>
+      <td>30.5</td>
+      <td>0.000000</td>
+      <td>1.0</td>
+      <td>2</td>
+      <td>0.500000</td>
+      <td>43.0</td>
+      <td>42.0</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>2018093000</td>
+      <td>2018-09-30</td>
+      <td>ATL</td>
+      <td>CIN</td>
+      <td>36</td>
+      <td>37</td>
+      <td>0</td>
+      <td>1</td>
+      <td>37.0</td>
+      <td>34.0</td>
+      <td>26.666667</td>
+      <td>21.0</td>
+      <td>27.5</td>
+      <td>29.666667</td>
+      <td>1.0</td>
+      <td>3</td>
+      <td>0.333333</td>
+      <td>80.0</td>
+      <td>85.0</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>2018100707</td>
+      <td>2018-10-07</td>
+      <td>ATL</td>
+      <td>PIT</td>
+      <td>17</td>
+      <td>41</td>
+      <td>0</td>
+      <td>0</td>
+      <td>36.0</td>
+      <td>36.5</td>
+      <td>34.666667</td>
+      <td>14.0</td>
+      <td>22.0</td>
+      <td>27.000000</td>
+      <td>1.0</td>
+      <td>4</td>
+      <td>0.250000</td>
+      <td>116.0</td>
+      <td>122.0</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>2018101400</td>
+      <td>2018-10-14</td>
+      <td>ATL</td>
+      <td>TB</td>
+      <td>34</td>
+      <td>29</td>
+      <td>1</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>26.5</td>
+      <td>30.000000</td>
+      <td>10.0</td>
+      <td>18.5</td>
+      <td>21.333333</td>
+      <td>1.0</td>
+      <td>5</td>
+      <td>0.200000</td>
+      <td>133.0</td>
+      <td>163.0</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>2018102200</td>
+      <td>2018-10-22</td>
+      <td>ATL</td>
+      <td>NYG</td>
+      <td>23</td>
+      <td>20</td>
+      <td>1</td>
+      <td>1</td>
+      <td>34.0</td>
+      <td>25.5</td>
+      <td>29.000000</td>
+      <td>13.0</td>
+      <td>22.0</td>
+      <td>20.666667</td>
+      <td>2.0</td>
+      <td>6</td>
+      <td>0.333333</td>
+      <td>167.0</td>
+      <td>192.0</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>2018110406</td>
+      <td>2018-11-04</td>
+      <td>ATL</td>
+      <td>WAS</td>
+      <td>38</td>
+      <td>14</td>
+      <td>1</td>
+      <td>0</td>
+      <td>23.0</td>
+      <td>28.5</td>
+      <td>24.666667</td>
+      <td>20.0</td>
+      <td>20.0</td>
+      <td>21.000000</td>
+      <td>3.0</td>
+      <td>7</td>
+      <td>0.428571</td>
+      <td>190.0</td>
+      <td>212.0</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>2018111102</td>
+      <td>2018-11-11</td>
+      <td>ATL</td>
+      <td>CLE</td>
+      <td>16</td>
+      <td>28</td>
+      <td>0</td>
+      <td>0</td>
+      <td>38.0</td>
+      <td>30.5</td>
+      <td>31.666667</td>
+      <td>21.0</td>
+      <td>19.5</td>
+      <td>20.666667</td>
+      <td>4.0</td>
+      <td>8</td>
+      <td>0.500000</td>
+      <td>228.0</td>
+      <td>226.0</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>2018111800</td>
+      <td>2018-11-18</td>
+      <td>ATL</td>
+      <td>DAL</td>
+      <td>19</td>
+      <td>22</td>
+      <td>0</td>
+      <td>1</td>
+      <td>16.0</td>
+      <td>27.0</td>
+      <td>25.666667</td>
+      <td>27.0</td>
+      <td>20.5</td>
+      <td>19.333333</td>
+      <td>4.0</td>
+      <td>9</td>
+      <td>0.444444</td>
+      <td>244.0</td>
+      <td>254.0</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>2018112202</td>
+      <td>2018-11-22</td>
+      <td>ATL</td>
+      <td>NO</td>
+      <td>17</td>
+      <td>31</td>
+      <td>0</td>
+      <td>0</td>
+      <td>19.0</td>
+      <td>17.5</td>
+      <td>24.333333</td>
+      <td>48.0</td>
+      <td>49.5</td>
+      <td>48.000000</td>
+      <td>4.0</td>
+      <td>10</td>
+      <td>0.400000</td>
+      <td>263.0</td>
+      <td>276.0</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>2018120200</td>
+      <td>2018-12-02</td>
+      <td>ATL</td>
+      <td>BAL</td>
+      <td>16</td>
+      <td>26</td>
+      <td>0</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>18.0</td>
+      <td>17.333333</td>
+      <td>34.0</td>
+      <td>29.0</td>
+      <td>24.666667</td>
+      <td>4.0</td>
+      <td>11</td>
+      <td>0.363636</td>
+      <td>280.0</td>
+      <td>307.0</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>2018120903</td>
+      <td>2018-12-09</td>
+      <td>ATL</td>
+      <td>GB</td>
+      <td>20</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+      <td>16.0</td>
+      <td>16.5</td>
+      <td>17.333333</td>
+      <td>17.0</td>
+      <td>17.0</td>
+      <td>19.333333</td>
+      <td>4.0</td>
+      <td>12</td>
+      <td>0.333333</td>
+      <td>296.0</td>
+      <td>333.0</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>2018121600</td>
+      <td>2018-12-16</td>
+      <td>ATL</td>
+      <td>ARI</td>
+      <td>40</td>
+      <td>14</td>
+      <td>1</td>
+      <td>1</td>
+      <td>20.0</td>
+      <td>18.0</td>
+      <td>17.666667</td>
+      <td>3.0</td>
+      <td>11.5</td>
+      <td>11.000000</td>
+      <td>4.0</td>
+      <td>13</td>
+      <td>0.307692</td>
+      <td>316.0</td>
+      <td>367.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>482</th>
+      <td>2018092304</td>
+      <td>2018-09-23</td>
+      <td>TEN</td>
+      <td>JAX</td>
+      <td>9</td>
+      <td>6</td>
+      <td>1</td>
+      <td>0</td>
+      <td>20.0</td>
+      <td>20.0</td>
+      <td>0.000000</td>
+      <td>31.0</td>
+      <td>25.5</td>
+      <td>0.000000</td>
+      <td>1.0</td>
+      <td>2</td>
+      <td>0.500000</td>
+      <td>40.0</td>
+      <td>44.0</td>
+    </tr>
+    <tr>
+      <th>483</th>
+      <td>2018093007</td>
+      <td>2018-09-30</td>
+      <td>TEN</td>
+      <td>PHI</td>
+      <td>26</td>
+      <td>23</td>
+      <td>1</td>
+      <td>1</td>
+      <td>9.0</td>
+      <td>14.5</td>
+      <td>16.333333</td>
+      <td>20.0</td>
+      <td>20.5</td>
+      <td>19.666667</td>
+      <td>2.0</td>
+      <td>3</td>
+      <td>0.666667</td>
+      <td>49.0</td>
+      <td>50.0</td>
+    </tr>
+    <tr>
+      <th>484</th>
+      <td>2018100700</td>
+      <td>2018-10-07</td>
+      <td>TEN</td>
+      <td>BUF</td>
+      <td>12</td>
+      <td>13</td>
+      <td>0</td>
+      <td>0</td>
+      <td>26.0</td>
+      <td>17.5</td>
+      <td>18.333333</td>
+      <td>0.0</td>
+      <td>13.5</td>
+      <td>15.666667</td>
+      <td>3.0</td>
+      <td>4</td>
+      <td>0.750000</td>
+      <td>75.0</td>
+      <td>73.0</td>
+    </tr>
+    <tr>
+      <th>485</th>
+      <td>2018101411</td>
+      <td>2018-10-14</td>
+      <td>TEN</td>
+      <td>BAL</td>
+      <td>0</td>
+      <td>21</td>
+      <td>0</td>
+      <td>1</td>
+      <td>12.0</td>
+      <td>19.0</td>
+      <td>15.666667</td>
+      <td>9.0</td>
+      <td>17.5</td>
+      <td>20.666667</td>
+      <td>3.0</td>
+      <td>5</td>
+      <td>0.600000</td>
+      <td>87.0</td>
+      <td>86.0</td>
+    </tr>
+    <tr>
+      <th>486</th>
+      <td>2018102100</td>
+      <td>2018-10-21</td>
+      <td>TEN</td>
+      <td>LAC</td>
+      <td>19</td>
+      <td>20</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>6.0</td>
+      <td>12.666667</td>
+      <td>38.0</td>
+      <td>32.0</td>
+      <td>31.000000</td>
+      <td>3.0</td>
+      <td>6</td>
+      <td>0.500000</td>
+      <td>87.0</td>
+      <td>107.0</td>
+    </tr>
+    <tr>
+      <th>487</th>
+      <td>2018110500</td>
+      <td>2018-11-05</td>
+      <td>TEN</td>
+      <td>DAL</td>
+      <td>28</td>
+      <td>14</td>
+      <td>1</td>
+      <td>0</td>
+      <td>19.0</td>
+      <td>9.5</td>
+      <td>10.333333</td>
+      <td>17.0</td>
+      <td>28.5</td>
+      <td>24.333333</td>
+      <td>3.0</td>
+      <td>7</td>
+      <td>0.428571</td>
+      <td>106.0</td>
+      <td>127.0</td>
+    </tr>
+    <tr>
+      <th>488</th>
+      <td>2018111108</td>
+      <td>2018-11-11</td>
+      <td>TEN</td>
+      <td>NE</td>
+      <td>34</td>
+      <td>10</td>
+      <td>1</td>
+      <td>1</td>
+      <td>28.0</td>
+      <td>23.5</td>
+      <td>15.666667</td>
+      <td>31.0</td>
+      <td>28.0</td>
+      <td>31.333333</td>
+      <td>4.0</td>
+      <td>8</td>
+      <td>0.500000</td>
+      <td>134.0</td>
+      <td>141.0</td>
+    </tr>
+    <tr>
+      <th>489</th>
+      <td>2018111804</td>
+      <td>2018-11-18</td>
+      <td>TEN</td>
+      <td>IND</td>
+      <td>10</td>
+      <td>38</td>
+      <td>0</td>
+      <td>0</td>
+      <td>34.0</td>
+      <td>31.0</td>
+      <td>27.000000</td>
+      <td>29.0</td>
+      <td>35.5</td>
+      <td>36.000000</td>
+      <td>5.0</td>
+      <td>9</td>
+      <td>0.555556</td>
+      <td>168.0</td>
+      <td>151.0</td>
+    </tr>
+    <tr>
+      <th>490</th>
+      <td>2018112600</td>
+      <td>2018-11-26</td>
+      <td>TEN</td>
+      <td>HOU</td>
+      <td>17</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10.0</td>
+      <td>22.0</td>
+      <td>24.000000</td>
+      <td>23.0</td>
+      <td>21.0</td>
+      <td>28.000000</td>
+      <td>5.0</td>
+      <td>10</td>
+      <td>0.500000</td>
+      <td>178.0</td>
+      <td>189.0</td>
+    </tr>
+    <tr>
+      <th>491</th>
+      <td>2018120211</td>
+      <td>2018-12-02</td>
+      <td>TEN</td>
+      <td>NYJ</td>
+      <td>26</td>
+      <td>22</td>
+      <td>1</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>13.5</td>
+      <td>20.333333</td>
+      <td>13.0</td>
+      <td>11.5</td>
+      <td>9.666667</td>
+      <td>5.0</td>
+      <td>11</td>
+      <td>0.454545</td>
+      <td>195.0</td>
+      <td>223.0</td>
+    </tr>
+    <tr>
+      <th>492</th>
+      <td>2018120600</td>
+      <td>2018-12-06</td>
+      <td>TEN</td>
+      <td>JAX</td>
+      <td>30</td>
+      <td>9</td>
+      <td>1</td>
+      <td>1</td>
+      <td>26.0</td>
+      <td>21.5</td>
+      <td>17.666667</td>
+      <td>6.0</td>
+      <td>13.5</td>
+      <td>14.333333</td>
+      <td>6.0</td>
+      <td>12</td>
+      <td>0.500000</td>
+      <td>221.0</td>
+      <td>245.0</td>
+    </tr>
+    <tr>
+      <th>493</th>
+      <td>2018121608</td>
+      <td>2018-12-16</td>
+      <td>TEN</td>
+      <td>NYG</td>
+      <td>17</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>30.0</td>
+      <td>28.0</td>
+      <td>24.333333</td>
+      <td>40.0</td>
+      <td>35.0</td>
+      <td>30.666667</td>
+      <td>7.0</td>
+      <td>13</td>
+      <td>0.538462</td>
+      <td>251.0</td>
+      <td>254.0</td>
+    </tr>
+    <tr>
+      <th>494</th>
+      <td>2018122200</td>
+      <td>2018-12-22</td>
+      <td>TEN</td>
+      <td>WAS</td>
+      <td>25</td>
+      <td>16</td>
+      <td>1</td>
+      <td>1</td>
+      <td>17.0</td>
+      <td>23.5</td>
+      <td>24.333333</td>
+      <td>16.0</td>
+      <td>16.0</td>
+      <td>15.000000</td>
+      <td>8.0</td>
+      <td>14</td>
+      <td>0.571429</td>
+      <td>268.0</td>
+      <td>254.0</td>
+    </tr>
+    <tr>
+      <th>495</th>
+      <td>2018123011</td>
+      <td>2018-12-30</td>
+      <td>TEN</td>
+      <td>IND</td>
+      <td>17</td>
+      <td>33</td>
+      <td>0</td>
+      <td>1</td>
+      <td>25.0</td>
+      <td>21.0</td>
+      <td>24.000000</td>
+      <td>28.0</td>
+      <td>25.5</td>
+      <td>25.000000</td>
+      <td>9.0</td>
+      <td>15</td>
+      <td>0.600000</td>
+      <td>293.0</td>
+      <td>270.0</td>
+    </tr>
+    <tr>
+      <th>496</th>
+      <td>2018090909</td>
+      <td>2018-09-09</td>
+      <td>WAS</td>
+      <td>ARI</td>
+      <td>24</td>
+      <td>6</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>497</th>
+      <td>2018091608</td>
+      <td>2018-09-16</td>
+      <td>WAS</td>
+      <td>IND</td>
+      <td>9</td>
+      <td>21</td>
+      <td>0</td>
+      <td>1</td>
+      <td>24.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>23.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1.0</td>
+      <td>1</td>
+      <td>1.000000</td>
+      <td>24.0</td>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>498</th>
+      <td>2018092309</td>
+      <td>2018-09-23</td>
+      <td>WAS</td>
+      <td>GB</td>
+      <td>31</td>
+      <td>17</td>
+      <td>1</td>
+      <td>1</td>
+      <td>9.0</td>
+      <td>16.5</td>
+      <td>0.000000</td>
+      <td>29.0</td>
+      <td>26.5</td>
+      <td>0.000000</td>
+      <td>1.0</td>
+      <td>2</td>
+      <td>0.500000</td>
+      <td>33.0</td>
+      <td>27.0</td>
+    </tr>
+    <tr>
+      <th>499</th>
+      <td>2018100800</td>
+      <td>2018-10-08</td>
+      <td>WAS</td>
+      <td>NO</td>
+      <td>19</td>
+      <td>43</td>
+      <td>0</td>
+      <td>0</td>
+      <td>31.0</td>
+      <td>20.0</td>
+      <td>21.333333</td>
+      <td>33.0</td>
+      <td>38.0</td>
+      <td>32.333333</td>
+      <td>2.0</td>
+      <td>3</td>
+      <td>0.666667</td>
+      <td>64.0</td>
+      <td>44.0</td>
+    </tr>
+    <tr>
+      <th>500</th>
+      <td>2018101408</td>
+      <td>2018-10-14</td>
+      <td>WAS</td>
+      <td>CAR</td>
+      <td>23</td>
+      <td>17</td>
+      <td>1</td>
+      <td>1</td>
+      <td>19.0</td>
+      <td>25.0</td>
+      <td>19.666667</td>
+      <td>33.0</td>
+      <td>32.0</td>
+      <td>29.333333</td>
+      <td>2.0</td>
+      <td>4</td>
+      <td>0.500000</td>
+      <td>83.0</td>
+      <td>87.0</td>
+    </tr>
+    <tr>
+      <th>501</th>
+      <td>2018102110</td>
+      <td>2018-10-21</td>
+      <td>WAS</td>
+      <td>DAL</td>
+      <td>20</td>
+      <td>17</td>
+      <td>1</td>
+      <td>1</td>
+      <td>23.0</td>
+      <td>21.0</td>
+      <td>24.333333</td>
+      <td>40.0</td>
+      <td>28.0</td>
+      <td>27.333333</td>
+      <td>3.0</td>
+      <td>5</td>
+      <td>0.600000</td>
+      <td>106.0</td>
+      <td>104.0</td>
+    </tr>
+    <tr>
+      <th>502</th>
+      <td>2018102806</td>
+      <td>2018-10-28</td>
+      <td>WAS</td>
+      <td>NYG</td>
+      <td>20</td>
+      <td>13</td>
+      <td>1</td>
+      <td>0</td>
+      <td>20.0</td>
+      <td>21.5</td>
+      <td>20.666667</td>
+      <td>20.0</td>
+      <td>16.5</td>
+      <td>21.333333</td>
+      <td>4.0</td>
+      <td>6</td>
+      <td>0.666667</td>
+      <td>126.0</td>
+      <td>121.0</td>
+    </tr>
+    <tr>
+      <th>503</th>
+      <td>2018110406</td>
+      <td>2018-11-04</td>
+      <td>WAS</td>
+      <td>ATL</td>
+      <td>14</td>
+      <td>38</td>
+      <td>0</td>
+      <td>1</td>
+      <td>20.0</td>
+      <td>20.0</td>
+      <td>21.000000</td>
+      <td>23.0</td>
+      <td>28.5</td>
+      <td>24.666667</td>
+      <td>5.0</td>
+      <td>7</td>
+      <td>0.714286</td>
+      <td>146.0</td>
+      <td>134.0</td>
+    </tr>
+    <tr>
+      <th>504</th>
+      <td>2018111107</td>
+      <td>2018-11-11</td>
+      <td>WAS</td>
+      <td>TB</td>
+      <td>16</td>
+      <td>3</td>
+      <td>1</td>
+      <td>0</td>
+      <td>14.0</td>
+      <td>17.0</td>
+      <td>18.000000</td>
+      <td>28.0</td>
+      <td>31.0</td>
+      <td>29.333333</td>
+      <td>5.0</td>
+      <td>8</td>
+      <td>0.625000</td>
+      <td>160.0</td>
+      <td>172.0</td>
+    </tr>
+    <tr>
+      <th>505</th>
+      <td>2018111806</td>
+      <td>2018-11-18</td>
+      <td>WAS</td>
+      <td>HOU</td>
+      <td>21</td>
+      <td>23</td>
+      <td>0</td>
+      <td>1</td>
+      <td>16.0</td>
+      <td>15.0</td>
+      <td>16.666667</td>
+      <td>19.0</td>
+      <td>30.5</td>
+      <td>27.000000</td>
+      <td>6.0</td>
+      <td>9</td>
+      <td>0.666667</td>
+      <td>176.0</td>
+      <td>175.0</td>
+    </tr>
+    <tr>
+      <th>506</th>
+      <td>2018112201</td>
+      <td>2018-11-22</td>
+      <td>WAS</td>
+      <td>DAL</td>
+      <td>23</td>
+      <td>31</td>
+      <td>0</td>
+      <td>0</td>
+      <td>21.0</td>
+      <td>18.5</td>
+      <td>17.000000</td>
+      <td>22.0</td>
+      <td>24.5</td>
+      <td>21.000000</td>
+      <td>6.0</td>
+      <td>10</td>
+      <td>0.600000</td>
+      <td>197.0</td>
+      <td>198.0</td>
+    </tr>
+    <tr>
+      <th>507</th>
+      <td>2018120300</td>
+      <td>2018-12-03</td>
+      <td>WAS</td>
+      <td>PHI</td>
+      <td>13</td>
+      <td>28</td>
+      <td>0</td>
+      <td>0</td>
+      <td>23.0</td>
+      <td>22.0</td>
+      <td>20.000000</td>
+      <td>25.0</td>
+      <td>16.0</td>
+      <td>17.333333</td>
+      <td>6.0</td>
+      <td>11</td>
+      <td>0.545455</td>
+      <td>220.0</td>
+      <td>229.0</td>
+    </tr>
+    <tr>
+      <th>508</th>
+      <td>2018120908</td>
+      <td>2018-12-09</td>
+      <td>WAS</td>
+      <td>NYG</td>
+      <td>16</td>
+      <td>40</td>
+      <td>0</td>
+      <td>1</td>
+      <td>13.0</td>
+      <td>18.0</td>
+      <td>19.000000</td>
+      <td>30.0</td>
+      <td>26.0</td>
+      <td>30.000000</td>
+      <td>6.0</td>
+      <td>12</td>
+      <td>0.500000</td>
+      <td>233.0</td>
+      <td>257.0</td>
+    </tr>
+    <tr>
+      <th>509</th>
+      <td>2018121606</td>
+      <td>2018-12-16</td>
+      <td>WAS</td>
+      <td>JAX</td>
+      <td>16</td>
+      <td>13</td>
+      <td>1</td>
+      <td>0</td>
+      <td>16.0</td>
+      <td>14.5</td>
+      <td>17.333333</td>
+      <td>9.0</td>
+      <td>7.5</td>
+      <td>12.000000</td>
+      <td>6.0</td>
+      <td>13</td>
+      <td>0.461538</td>
+      <td>249.0</td>
+      <td>297.0</td>
+    </tr>
+    <tr>
+      <th>510</th>
+      <td>2018122200</td>
+      <td>2018-12-22</td>
+      <td>WAS</td>
+      <td>TEN</td>
+      <td>16</td>
+      <td>25</td>
+      <td>0</td>
+      <td>0</td>
+      <td>16.0</td>
+      <td>16.0</td>
+      <td>15.000000</td>
+      <td>17.0</td>
+      <td>23.5</td>
+      <td>24.333333</td>
+      <td>7.0</td>
+      <td>14</td>
+      <td>0.500000</td>
+      <td>265.0</td>
+      <td>310.0</td>
+    </tr>
+    <tr>
+      <th>511</th>
+      <td>2018123012</td>
+      <td>2018-12-30</td>
+      <td>WAS</td>
+      <td>PHI</td>
+      <td>0</td>
+      <td>24</td>
+      <td>0</td>
+      <td>1</td>
+      <td>16.0</td>
+      <td>16.0</td>
+      <td>16.000000</td>
+      <td>32.0</td>
+      <td>31.0</td>
+      <td>28.333333</td>
+      <td>7.0</td>
+      <td>15</td>
+      <td>0.466667</td>
+      <td>281.0</td>
+      <td>335.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>512 rows × 19 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">win_percentage</span> <span class="o">=</span> <span class="n">scores_2</span><span class="o">.</span><span class="n">filter</span><span class="p">([</span><span class="s1">&#39;GameID&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">,</span><span class="s1">&#39;team&#39;</span><span class="p">,</span><span class="s1">&#39;win_pct&#39;</span><span class="p">,</span><span class="s1">&#39;cum_wins&#39;</span><span class="p">,</span><span class="s1">&#39;cum_PF&#39;</span><span class="p">,</span><span class="s1">&#39;cum_PA&#39;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores_3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">scores_2</span><span class="p">,</span><span class="n">win_percentage</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span><span class="n">left_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span><span class="s1">&#39;opponent&#39;</span><span class="p">],</span><span class="n">right_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span><span class="s1">&#39;team&#39;</span><span class="p">],</span><span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;_opponent&#39;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores_3</span> <span class="o">=</span> <span class="n">scores_3</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;GameID_opponent&#39;</span><span class="p">,</span><span class="s1">&#39;team_opponent&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;win_pct_var&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;win_pct&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;win_pct_opponent&#39;</span><span class="p">]</span>
+<span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_wins_var&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_wins&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_wins_opponent&#39;</span><span class="p">]</span>
+<span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_PF_cum_PA_opp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_PF&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_PA_opponent&#39;</span><span class="p">]</span>
+<span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_PA_cum_PF_opp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_PA&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;cum_PF_opponent&#39;</span><span class="p">]</span>
+<span class="n">scores_3</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GameID</th>
+      <th>date</th>
+      <th>team</th>
+      <th>opponent</th>
+      <th>PF</th>
+      <th>PA</th>
+      <th>win</th>
+      <th>hometeam</th>
+      <th>score1MA</th>
+      <th>score2MA</th>
+      <th>...</th>
+      <th>cum_PF</th>
+      <th>cum_PA</th>
+      <th>win_pct_opponent</th>
+      <th>cum_wins_opponent</th>
+      <th>cum_PF_opponent</th>
+      <th>cum_PA_opponent</th>
+      <th>win_pct_var</th>
+      <th>cum_wins_var</th>
+      <th>cum_PF_cum_PA_opp</th>
+      <th>cum_PA_cum_PF_opp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2018090909</td>
+      <td>2018-09-09</td>
+      <td>ARI</td>
+      <td>WAS</td>
+      <td>6</td>
+      <td>24</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2018091609</td>
+      <td>2018-09-16</td>
+      <td>ARI</td>
+      <td>LA</td>
+      <td>0</td>
+      <td>34</td>
+      <td>0</td>
+      <td>0</td>
+      <td>6.0</td>
+      <td>0.0</td>
+      <td>...</td>
+      <td>6.0</td>
+      <td>24.0</td>
+      <td>1.000000</td>
+      <td>1.0</td>
+      <td>33.0</td>
+      <td>13.0</td>
+      <td>-1.000000</td>
+      <td>-1.0</td>
+      <td>-7.0</td>
+      <td>-9.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018092311</td>
+      <td>2018-09-23</td>
+      <td>ARI</td>
+      <td>CHI</td>
+      <td>14</td>
+      <td>16</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>...</td>
+      <td>6.0</td>
+      <td>58.0</td>
+      <td>0.500000</td>
+      <td>1.0</td>
+      <td>47.0</td>
+      <td>41.0</td>
+      <td>-0.500000</td>
+      <td>-1.0</td>
+      <td>-35.0</td>
+      <td>11.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018093008</td>
+      <td>2018-09-30</td>
+      <td>ARI</td>
+      <td>SEA</td>
+      <td>17</td>
+      <td>20</td>
+      <td>0</td>
+      <td>1</td>
+      <td>14.0</td>
+      <td>7.0</td>
+      <td>...</td>
+      <td>20.0</td>
+      <td>74.0</td>
+      <td>0.333333</td>
+      <td>1.0</td>
+      <td>65.0</td>
+      <td>64.0</td>
+      <td>-0.333333</td>
+      <td>-1.0</td>
+      <td>-44.0</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018100710</td>
+      <td>2018-10-07</td>
+      <td>ARI</td>
+      <td>SF</td>
+      <td>28</td>
+      <td>18</td>
+      <td>1</td>
+      <td>0</td>
+      <td>17.0</td>
+      <td>15.5</td>
+      <td>...</td>
+      <td>37.0</td>
+      <td>94.0</td>
+      <td>0.250000</td>
+      <td>1.0</td>
+      <td>100.0</td>
+      <td>118.0</td>
+      <td>-0.250000</td>
+      <td>-1.0</td>
+      <td>-81.0</td>
+      <td>-6.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 27 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-League-Rankings-for-each-week">Create League Rankings for each week<a class="anchor-link" href="#Create-League-Rankings-for-each-week"> </a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Import-player-stats-for-each-game">Import player stats for each game<a class="anchor-link" href="#Import-player-stats-for-each-game"> </a></h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">player</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;C:/NFL Prediction/Data Raw/ps18.csv&quot;</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">player</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Season</th>
+      <th>game.id</th>
+      <th>date</th>
+      <th>Team</th>
+      <th>playerID</th>
+      <th>name</th>
+      <th>pass.att</th>
+      <th>pass.comp</th>
+      <th>passyds</th>
+      <th>pass.tds</th>
+      <th>...</th>
+      <th>asst.tackles</th>
+      <th>sacks</th>
+      <th>defints</th>
+      <th>forced.fumbs</th>
+      <th>totalfumbs</th>
+      <th>recfumbs</th>
+      <th>totalrecfumbs</th>
+      <th>fumbyds</th>
+      <th>fumbslost</th>
+      <th>games</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>2018</td>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>PHI</td>
+      <td>00-0029567</td>
+      <td>N.Foles</td>
+      <td>34</td>
+      <td>19</td>
+      <td>117</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2018</td>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>PHI</td>
+      <td>00-0033731</td>
+      <td>T.Sullivan</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018</td>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>PHI</td>
+      <td>00-0023564</td>
+      <td>D.Sproles</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2018</td>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>PHI</td>
+      <td>00-0033573</td>
+      <td>S.Gibson</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018</td>
+      <td>2018090600</td>
+      <td>2018-09-06</td>
+      <td>PHI</td>
+      <td>00-0031549</td>
+      <td>N.Agholor</td>
+      <td>1</td>
+      <td>1</td>
+      <td>15</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 57 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">player</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;
+Int64Index: 13649 entries, 1 to 13649
+Data columns (total 57 columns):
+Season           13649 non-null int64
+game.id          13649 non-null int64
+date             13649 non-null object
+Team             13624 non-null object
+playerID         13649 non-null object
+name             13649 non-null object
+pass.att         13649 non-null int64
+pass.comp        13649 non-null int64
+passyds          13649 non-null int64
+pass.tds         13649 non-null int64
+pass.ints        13649 non-null int64
+pass.twopta      13649 non-null int64
+pass.twoptm      13649 non-null int64
+rush.att         13649 non-null int64
+rushyds          13649 non-null int64
+rushtds          13649 non-null int64
+rushlng          13649 non-null int64
+rushlngtd        13649 non-null int64
+rush.twopta      13649 non-null int64
+rush.twoptm      13649 non-null int64
+recept           13649 non-null int64
+recyds           13649 non-null int64
+rec.tds          13649 non-null int64
+reclng           13649 non-null int64
+reclngtd         13649 non-null int64
+rec.twopta       13649 non-null int64
+rec.twoptm       13649 non-null int64
+kick.rets        13649 non-null int64
+kickret.avg      13649 non-null int64
+kickret.tds      13649 non-null int64
+kick.ret.lng     13649 non-null int64
+kickret.lngtd    13649 non-null int64
+punt.rets        13649 non-null int64
+puntret.avg      13649 non-null int64
+puntret.tds      13649 non-null int64
+puntret.lng      13649 non-null int64
+puntret.lngtd    13649 non-null int64
+fgm              13649 non-null int64
+fga              13649 non-null int64
+fgyds            13649 non-null int64
+totpts.fg        13649 non-null int64
+xpmade           13649 non-null int64
+xpmissed         13649 non-null int64
+xpa              13649 non-null int64
+xpb              13649 non-null int64
+xppts.tot        13649 non-null int64
+tackles          13649 non-null int64
+asst.tackles     13649 non-null int64
+sacks            13649 non-null float64
+defints          13649 non-null int64
+forced.fumbs     13649 non-null int64
+totalfumbs       13649 non-null int64
+recfumbs         13649 non-null int64
+totalrecfumbs    13649 non-null int64
+fumbyds          13649 non-null int64
+fumbslost        13649 non-null int64
+games            13649 non-null int64
+dtypes: float64(1), int64(52), object(4)
+memory usage: 5.8+ MB
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Aggregate-the-columns-to-team-and-date-level">Aggregate the columns to team and date level<a class="anchor-link" href="#Aggregate-the-columns-to-team-and-date-level"> </a></h4>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">team</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;Team&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">team</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Team</th>
+      <th>date</th>
+      <th>Season</th>
+      <th>game.id</th>
+      <th>pass.att</th>
+      <th>pass.comp</th>
+      <th>passyds</th>
+      <th>pass.tds</th>
+      <th>pass.ints</th>
+      <th>pass.twopta</th>
+      <th>...</th>
+      <th>asst.tackles</th>
+      <th>sacks</th>
+      <th>defints</th>
+      <th>forced.fumbs</th>
+      <th>totalfumbs</th>
+      <th>recfumbs</th>
+      <th>totalrecfumbs</th>
+      <th>fumbyds</th>
+      <th>fumbslost</th>
+      <th>games</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ARI</td>
+      <td>2018-09-09</td>
+      <td>46414</td>
+      <td>46416090907</td>
+      <td>34</td>
+      <td>20</td>
+      <td>153</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>...</td>
+      <td>15</td>
+      <td>3.0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ARI</td>
+      <td>2018-09-16</td>
+      <td>46414</td>
+      <td>46416107007</td>
+      <td>27</td>
+      <td>17</td>
+      <td>90</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>...</td>
+      <td>19</td>
+      <td>2.0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ARI</td>
+      <td>2018-09-23</td>
+      <td>50450</td>
+      <td>50452307775</td>
+      <td>26</td>
+      <td>17</td>
+      <td>193</td>
+      <td>2</td>
+      <td>3</td>
+      <td>0</td>
+      <td>...</td>
+      <td>16</td>
+      <td>3.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+      <td>1</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ARI</td>
+      <td>2018-09-30</td>
+      <td>54486</td>
+      <td>54488511216</td>
+      <td>27</td>
+      <td>15</td>
+      <td>180</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>2.0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>ARI</td>
+      <td>2018-10-07</td>
+      <td>46414</td>
+      <td>46416316330</td>
+      <td>25</td>
+      <td>10</td>
+      <td>170</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>21</td>
+      <td>4.0</td>
+      <td>2</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>4</td>
+      <td>72</td>
+      <td>0</td>
+      <td>23</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 55 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Run-Model">Run Model<a class="anchor-link" href="#Run-Model"> </a></h1>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores_3</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">X</span><span class="o">=</span><span class="n">scores_3</span><span class="p">[[</span><span class="s1">&#39;score1MA&#39;</span><span class="p">,</span><span class="s1">&#39;hometeam&#39;</span><span class="p">,</span><span class="s1">&#39;cum_wins_var&#39;</span><span class="p">,</span><span class="s1">&#39;cum_PF&#39;</span><span class="p">,</span><span class="s1">&#39;cum_PA&#39;</span><span class="p">,</span><span class="s1">&#39;cum_PF_cum_PA_opp&#39;</span><span class="p">,</span><span class="s1">&#39;cum_PA_cum_PF_opp&#39;</span><span class="p">]]</span>  <span class="c1"># Features</span>
+<span class="n">y</span><span class="o">=</span><span class="n">scores_3</span><span class="p">[</span><span class="s1">&#39;win&#39;</span><span class="p">]</span>  <span class="c1"># Labels</span>
+
+<span class="c1"># Split dataset into training set and test set</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span> <span class="c1"># 70% training and 30% test</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clf</span><span class="o">=</span><span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.5454545454545454</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.723463687150838</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">feature_importances</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">,</span>
+                                   <span class="n">index</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                                    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;importance&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">feature_importances</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>cum_PF_cum_PA_opp</th>
+      <td>0.196144</td>
+    </tr>
+    <tr>
+      <th>score1MA</th>
+      <td>0.163509</td>
+    </tr>
+    <tr>
+      <th>cum_PA_cum_PF_opp</th>
+      <td>0.152062</td>
+    </tr>
+    <tr>
+      <th>cum_PA</th>
+      <td>0.146758</td>
+    </tr>
+    <tr>
+      <th>hometeam</th>
+      <td>0.136369</td>
+    </tr>
+    <tr>
+      <th>cum_PF</th>
+      <td>0.118839</td>
+    </tr>
+    <tr>
+      <th>cum_wins_var</th>
+      <td>0.086319</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">team</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Season</th>
+      <th>game.id</th>
+      <th>pass.att</th>
+      <th>pass.comp</th>
+      <th>passyds</th>
+      <th>pass.tds</th>
+      <th>pass.ints</th>
+      <th>pass.twopta</th>
+      <th>pass.twoptm</th>
+      <th>rush.att</th>
+      <th>...</th>
+      <th>asst.tackles</th>
+      <th>sacks</th>
+      <th>defints</th>
+      <th>forced.fumbs</th>
+      <th>totalfumbs</th>
+      <th>recfumbs</th>
+      <th>totalrecfumbs</th>
+      <th>fumbyds</th>
+      <th>fumbslost</th>
+      <th>games</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Season</th>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.094738</td>
+      <td>0.059402</td>
+      <td>0.066156</td>
+      <td>0.022737</td>
+      <td>0.029400</td>
+      <td>-0.000546</td>
+      <td>-0.067025</td>
+      <td>-0.056462</td>
+      <td>...</td>
+      <td>0.156220</td>
+      <td>0.007156</td>
+      <td>0.024758</td>
+      <td>-0.061828</td>
+      <td>0.037763</td>
+      <td>0.070571</td>
+      <td>0.023604</td>
+      <td>-0.030357</td>
+      <td>-0.003442</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>game.id</th>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.094729</td>
+      <td>0.059393</td>
+      <td>0.066143</td>
+      <td>0.022729</td>
+      <td>0.029396</td>
+      <td>-0.000548</td>
+      <td>-0.067027</td>
+      <td>-0.056459</td>
+      <td>...</td>
+      <td>0.156224</td>
+      <td>0.007155</td>
+      <td>0.024755</td>
+      <td>-0.061833</td>
+      <td>0.037759</td>
+      <td>0.070567</td>
+      <td>0.023600</td>
+      <td>-0.030355</td>
+      <td>-0.003443</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>pass.att</th>
+      <td>0.094738</td>
+      <td>0.094729</td>
+      <td>1.000000</td>
+      <td>0.871394</td>
+      <td>0.662993</td>
+      <td>0.092164</td>
+      <td>0.282843</td>
+      <td>0.272143</td>
+      <td>0.168898</td>
+      <td>-0.438757</td>
+      <td>...</td>
+      <td>0.019647</td>
+      <td>-0.140815</td>
+      <td>-0.157295</td>
+      <td>-0.081766</td>
+      <td>0.114542</td>
+      <td>-0.014914</td>
+      <td>-0.081599</td>
+      <td>-0.139443</td>
+      <td>0.223178</td>
+      <td>0.094738</td>
+    </tr>
+    <tr>
+      <th>pass.comp</th>
+      <td>0.059402</td>
+      <td>0.059393</td>
+      <td>0.871394</td>
+      <td>1.000000</td>
+      <td>0.776024</td>
+      <td>0.243571</td>
+      <td>0.122287</td>
+      <td>0.260056</td>
+      <td>0.161179</td>
+      <td>-0.365487</td>
+      <td>...</td>
+      <td>-0.042829</td>
+      <td>-0.120367</td>
+      <td>-0.168576</td>
+      <td>-0.080259</td>
+      <td>0.136556</td>
+      <td>-0.003809</td>
+      <td>-0.089594</td>
+      <td>-0.126877</td>
+      <td>0.228164</td>
+      <td>0.059402</td>
+    </tr>
+    <tr>
+      <th>passyds</th>
+      <td>0.066156</td>
+      <td>0.066143</td>
+      <td>0.662993</td>
+      <td>0.776024</td>
+      <td>1.000000</td>
+      <td>0.523539</td>
+      <td>0.093346</td>
+      <td>0.254015</td>
+      <td>0.200639</td>
+      <td>-0.225678</td>
+      <td>...</td>
+      <td>-0.017563</td>
+      <td>-0.044256</td>
+      <td>-0.123188</td>
+      <td>-0.052112</td>
+      <td>0.064924</td>
+      <td>-0.017414</td>
+      <td>-0.056500</td>
+      <td>-0.103763</td>
+      <td>0.118211</td>
+      <td>0.066156</td>
+    </tr>
+    <tr>
+      <th>pass.tds</th>
+      <td>0.022737</td>
+      <td>0.022729</td>
+      <td>0.092164</td>
+      <td>0.243571</td>
+      <td>0.523539</td>
+      <td>1.000000</td>
+      <td>-0.095620</td>
+      <td>0.140548</td>
+      <td>0.155166</td>
+      <td>0.050371</td>
+      <td>...</td>
+      <td>-0.001678</td>
+      <td>0.082012</td>
+      <td>0.078079</td>
+      <td>0.062989</td>
+      <td>-0.046482</td>
+      <td>-0.031253</td>
+      <td>0.032131</td>
+      <td>-0.017377</td>
+      <td>-0.041184</td>
+      <td>0.022737</td>
+    </tr>
+    <tr>
+      <th>pass.ints</th>
+      <td>0.029400</td>
+      <td>0.029396</td>
+      <td>0.282843</td>
+      <td>0.122287</td>
+      <td>0.093346</td>
+      <td>-0.095620</td>
+      <td>1.000000</td>
+      <td>0.058614</td>
+      <td>0.040833</td>
+      <td>-0.181914</td>
+      <td>...</td>
+      <td>0.098483</td>
+      <td>-0.082520</td>
+      <td>-0.083441</td>
+      <td>-0.025834</td>
+      <td>-0.004360</td>
+      <td>-0.017912</td>
+      <td>-0.027767</td>
+      <td>-0.069647</td>
+      <td>0.032185</td>
+      <td>0.029400</td>
+    </tr>
+    <tr>
+      <th>pass.twopta</th>
+      <td>-0.000546</td>
+      <td>-0.000548</td>
+      <td>0.272143</td>
+      <td>0.260056</td>
+      <td>0.254015</td>
+      <td>0.140548</td>
+      <td>0.058614</td>
+      <td>1.000000</td>
+      <td>0.673605</td>
+      <td>-0.146960</td>
+      <td>...</td>
+      <td>-0.065502</td>
+      <td>-0.049449</td>
+      <td>-0.084848</td>
+      <td>-0.058847</td>
+      <td>0.031043</td>
+      <td>-0.021044</td>
+      <td>-0.072585</td>
+      <td>-0.000543</td>
+      <td>0.084078</td>
+      <td>-0.000546</td>
+    </tr>
+    <tr>
+      <th>pass.twoptm</th>
+      <td>-0.067025</td>
+      <td>-0.067027</td>
+      <td>0.168898</td>
+      <td>0.161179</td>
+      <td>0.200639</td>
+      <td>0.155166</td>
+      <td>0.040833</td>
+      <td>0.673605</td>
+      <td>1.000000</td>
+      <td>-0.077365</td>
+      <td>...</td>
+      <td>-0.038787</td>
+      <td>-0.081839</td>
+      <td>-0.071604</td>
+      <td>-0.036035</td>
+      <td>-0.024922</td>
+      <td>-0.038424</td>
+      <td>-0.067395</td>
+      <td>-0.017553</td>
+      <td>0.014507</td>
+      <td>-0.067025</td>
+    </tr>
+    <tr>
+      <th>rush.att</th>
+      <td>-0.056462</td>
+      <td>-0.056459</td>
+      <td>-0.438757</td>
+      <td>-0.365487</td>
+      <td>-0.225678</td>
+      <td>0.050371</td>
+      <td>-0.181914</td>
+      <td>-0.146960</td>
+      <td>-0.077365</td>
+      <td>1.000000</td>
+      <td>...</td>
+      <td>-0.239365</td>
+      <td>0.162031</td>
+      <td>0.229744</td>
+      <td>0.073483</td>
+      <td>0.019182</td>
+      <td>0.106455</td>
+      <td>0.172945</td>
+      <td>0.018136</td>
+      <td>-0.113000</td>
+      <td>-0.056462</td>
+    </tr>
+    <tr>
+      <th>rushyds</th>
+      <td>-0.017833</td>
+      <td>-0.017828</td>
+      <td>-0.416320</td>
+      <td>-0.383052</td>
+      <td>-0.256199</td>
+      <td>0.065214</td>
+      <td>-0.100434</td>
+      <td>-0.128717</td>
+      <td>-0.069486</td>
+      <td>0.764185</td>
+      <td>...</td>
+      <td>-0.098176</td>
+      <td>0.101012</td>
+      <td>0.143733</td>
+      <td>-0.007506</td>
+      <td>-0.010911</td>
+      <td>0.058995</td>
+      <td>0.068743</td>
+      <td>-0.033058</td>
+      <td>-0.108029</td>
+      <td>-0.017833</td>
+    </tr>
+    <tr>
+      <th>rushtds</th>
+      <td>0.073579</td>
+      <td>0.073584</td>
+      <td>-0.160469</td>
+      <td>-0.099732</td>
+      <td>0.004894</td>
+      <td>-0.103301</td>
+      <td>-0.164911</td>
+      <td>-0.036742</td>
+      <td>-0.032704</td>
+      <td>0.393531</td>
+      <td>...</td>
+      <td>0.005049</td>
+      <td>0.155797</td>
+      <td>0.091968</td>
+      <td>0.033366</td>
+      <td>-0.083671</td>
+      <td>0.003829</td>
+      <td>0.035848</td>
+      <td>0.032768</td>
+      <td>-0.164178</td>
+      <td>0.073579</td>
+    </tr>
+    <tr>
+      <th>rushlng</th>
+      <td>0.070144</td>
+      <td>0.070148</td>
+      <td>-0.313400</td>
+      <td>-0.293538</td>
+      <td>-0.204405</td>
+      <td>0.049035</td>
+      <td>-0.093868</td>
+      <td>-0.077395</td>
+      <td>-0.035491</td>
+      <td>0.421870</td>
+      <td>...</td>
+      <td>-0.004297</td>
+      <td>0.068388</td>
+      <td>0.085367</td>
+      <td>-0.033508</td>
+      <td>-0.001951</td>
+      <td>0.026662</td>
+      <td>0.019327</td>
+      <td>-0.028013</td>
+      <td>-0.061687</td>
+      <td>0.070144</td>
+    </tr>
+    <tr>
+      <th>rushlngtd</th>
+      <td>0.072769</td>
+      <td>0.072773</td>
+      <td>-0.211114</td>
+      <td>-0.187724</td>
+      <td>-0.121142</td>
+      <td>-0.050078</td>
+      <td>-0.083562</td>
+      <td>-0.060591</td>
+      <td>-0.064600</td>
+      <td>0.187065</td>
+      <td>...</td>
+      <td>0.041064</td>
+      <td>0.127421</td>
+      <td>0.100724</td>
+      <td>0.040157</td>
+      <td>-0.084699</td>
+      <td>-0.021390</td>
+      <td>-0.002188</td>
+      <td>-0.014940</td>
+      <td>-0.115407</td>
+      <td>0.072769</td>
+    </tr>
+    <tr>
+      <th>rush.twopta</th>
+      <td>-0.033560</td>
+      <td>-0.033564</td>
+      <td>0.004431</td>
+      <td>0.038441</td>
+      <td>0.070703</td>
+      <td>0.019259</td>
+      <td>-0.078052</td>
+      <td>0.061601</td>
+      <td>0.060601</td>
+      <td>0.047128</td>
+      <td>...</td>
+      <td>0.003532</td>
+      <td>-0.012869</td>
+      <td>-0.029933</td>
+      <td>-0.043140</td>
+      <td>0.079457</td>
+      <td>-0.002160</td>
+      <td>-0.035986</td>
+      <td>0.027060</td>
+      <td>0.130901</td>
+      <td>-0.033560</td>
+    </tr>
+    <tr>
+      <th>rush.twoptm</th>
+      <td>-0.052627</td>
+      <td>-0.052632</td>
+      <td>0.010711</td>
+      <td>0.033752</td>
+      <td>0.048755</td>
+      <td>-0.000629</td>
+      <td>-0.049504</td>
+      <td>0.083420</td>
+      <td>0.063755</td>
+      <td>0.020181</td>
+      <td>...</td>
+      <td>0.010502</td>
+      <td>-0.023255</td>
+      <td>-0.012610</td>
+      <td>-0.021201</td>
+      <td>0.046504</td>
+      <td>-0.009936</td>
+      <td>-0.048485</td>
+      <td>-0.007761</td>
+      <td>0.100032</td>
+      <td>-0.052627</td>
+    </tr>
+    <tr>
+      <th>recept</th>
+      <td>0.059402</td>
+      <td>0.059393</td>
+      <td>0.871394</td>
+      <td>1.000000</td>
+      <td>0.776024</td>
+      <td>0.243571</td>
+      <td>0.122287</td>
+      <td>0.260056</td>
+      <td>0.161179</td>
+      <td>-0.365487</td>
+      <td>...</td>
+      <td>-0.042829</td>
+      <td>-0.120367</td>
+      <td>-0.168576</td>
+      <td>-0.080259</td>
+      <td>0.136556</td>
+      <td>-0.003809</td>
+      <td>-0.089594</td>
+      <td>-0.126877</td>
+      <td>0.228164</td>
+      <td>0.059402</td>
+    </tr>
+    <tr>
+      <th>recyds</th>
+      <td>0.065900</td>
+      <td>0.065887</td>
+      <td>0.663096</td>
+      <td>0.776169</td>
+      <td>0.999996</td>
+      <td>0.523413</td>
+      <td>0.093233</td>
+      <td>0.253938</td>
+      <td>0.200582</td>
+      <td>-0.225681</td>
+      <td>...</td>
+      <td>-0.017565</td>
+      <td>-0.044283</td>
+      <td>-0.123150</td>
+      <td>-0.052072</td>
+      <td>0.064996</td>
+      <td>-0.017503</td>
+      <td>-0.056509</td>
+      <td>-0.103630</td>
+      <td>0.118438</td>
+      <td>0.065900</td>
+    </tr>
+    <tr>
+      <th>rec.tds</th>
+      <td>0.022737</td>
+      <td>0.022729</td>
+      <td>0.092164</td>
+      <td>0.243571</td>
+      <td>0.523539</td>
+      <td>1.000000</td>
+      <td>-0.095620</td>
+      <td>0.140548</td>
+      <td>0.155166</td>
+      <td>0.050371</td>
+      <td>...</td>
+      <td>-0.001678</td>
+      <td>0.082012</td>
+      <td>0.078079</td>
+      <td>0.062989</td>
+      <td>-0.046482</td>
+      <td>-0.031253</td>
+      <td>0.032131</td>
+      <td>-0.017377</td>
+      <td>-0.041184</td>
+      <td>0.022737</td>
+    </tr>
+    <tr>
+      <th>reclng</th>
+      <td>0.165078</td>
+      <td>0.165068</td>
+      <td>0.323869</td>
+      <td>0.402063</td>
+      <td>0.776397</td>
+      <td>0.497007</td>
+      <td>0.034871</td>
+      <td>0.141011</td>
+      <td>0.107071</td>
+      <td>-0.119122</td>
+      <td>...</td>
+      <td>0.036443</td>
+      <td>0.012620</td>
+      <td>-0.028995</td>
+      <td>-0.022502</td>
+      <td>0.022055</td>
+      <td>-0.040752</td>
+      <td>-0.045664</td>
+      <td>-0.043198</td>
+      <td>0.057956</td>
+      <td>0.165078</td>
+    </tr>
+    <tr>
+      <th>reclngtd</th>
+      <td>0.000240</td>
+      <td>0.000232</td>
+      <td>-0.045509</td>
+      <td>0.060254</td>
+      <td>0.426607</td>
+      <td>0.689741</td>
+      <td>-0.041163</td>
+      <td>0.045197</td>
+      <td>0.108014</td>
+      <td>0.015227</td>
+      <td>...</td>
+      <td>0.060757</td>
+      <td>0.085446</td>
+      <td>0.071299</td>
+      <td>0.088264</td>
+      <td>-0.071247</td>
+      <td>-0.078987</td>
+      <td>0.001983</td>
+      <td>0.002301</td>
+      <td>-0.053275</td>
+      <td>0.000240</td>
+    </tr>
+    <tr>
+      <th>rec.twopta</th>
+      <td>-0.001645</td>
+      <td>-0.001650</td>
+      <td>0.277619</td>
+      <td>0.260713</td>
+      <td>0.257784</td>
+      <td>0.151507</td>
+      <td>0.068589</td>
+      <td>0.935429</td>
+      <td>0.624569</td>
+      <td>-0.168139</td>
+      <td>...</td>
+      <td>-0.070158</td>
+      <td>-0.064985</td>
+      <td>-0.088547</td>
+      <td>-0.046605</td>
+      <td>0.046124</td>
+      <td>-0.015602</td>
+      <td>-0.063890</td>
+      <td>0.013784</td>
+      <td>0.098922</td>
+      <td>-0.001645</td>
+    </tr>
+    <tr>
+      <th>rec.twoptm</th>
+      <td>-0.044735</td>
+      <td>-0.044739</td>
+      <td>0.208949</td>
+      <td>0.191332</td>
+      <td>0.234266</td>
+      <td>0.187693</td>
+      <td>0.038186</td>
+      <td>0.640998</td>
+      <td>0.939449</td>
+      <td>-0.122786</td>
+      <td>...</td>
+      <td>-0.037877</td>
+      <td>-0.072878</td>
+      <td>-0.081990</td>
+      <td>-0.019958</td>
+      <td>-0.005770</td>
+      <td>-0.029187</td>
+      <td>-0.056959</td>
+      <td>-0.012749</td>
+      <td>0.038843</td>
+      <td>-0.044735</td>
+    </tr>
+    <tr>
+      <th>kick.rets</th>
+      <td>0.033766</td>
+      <td>0.033773</td>
+      <td>0.105956</td>
+      <td>0.031944</td>
+      <td>0.063430</td>
+      <td>0.055032</td>
+      <td>0.123465</td>
+      <td>0.055132</td>
+      <td>0.003047</td>
+      <td>-0.185592</td>
+      <td>...</td>
+      <td>0.121429</td>
+      <td>-0.101497</td>
+      <td>-0.108384</td>
+      <td>-0.064901</td>
+      <td>0.050434</td>
+      <td>0.014782</td>
+      <td>-0.018515</td>
+      <td>-0.102266</td>
+      <td>0.093477</td>
+      <td>0.033766</td>
+    </tr>
+    <tr>
+      <th>kickret.avg</th>
+      <td>0.049651</td>
+      <td>0.049654</td>
+      <td>0.028275</td>
+      <td>-0.003266</td>
+      <td>0.019911</td>
+      <td>0.079739</td>
+      <td>0.054503</td>
+      <td>0.063584</td>
+      <td>0.028861</td>
+      <td>-0.110019</td>
+      <td>...</td>
+      <td>0.148858</td>
+      <td>-0.089380</td>
+      <td>-0.047245</td>
+      <td>-0.052438</td>
+      <td>-0.015281</td>
+      <td>-0.056296</td>
+      <td>-0.068783</td>
+      <td>-0.086680</td>
+      <td>0.070666</td>
+      <td>0.049651</td>
+    </tr>
+    <tr>
+      <th>kickret.tds</th>
+      <td>0.017591</td>
+      <td>0.017590</td>
+      <td>-0.014802</td>
+      <td>-0.009209</td>
+      <td>0.017120</td>
+      <td>0.012037</td>
+      <td>0.039722</td>
+      <td>-0.039931</td>
+      <td>-0.028201</td>
+      <td>0.003641</td>
+      <td>...</td>
+      <td>0.035571</td>
+      <td>-0.027354</td>
+      <td>0.060538</td>
+      <td>-0.063767</td>
+      <td>-0.022500</td>
+      <td>-0.050456</td>
+      <td>-0.071187</td>
+      <td>-0.016593</td>
+      <td>0.008140</td>
+      <td>0.017591</td>
+    </tr>
+    <tr>
+      <th>kick.ret.lng</th>
+      <td>0.050139</td>
+      <td>0.050142</td>
+      <td>0.023598</td>
+      <td>-0.016418</td>
+      <td>0.020034</td>
+      <td>0.083808</td>
+      <td>0.058765</td>
+      <td>0.032902</td>
+      <td>0.009087</td>
+      <td>-0.120762</td>
+      <td>...</td>
+      <td>0.159119</td>
+      <td>-0.086896</td>
+      <td>-0.054422</td>
+      <td>-0.070854</td>
+      <td>-0.016474</td>
+      <td>-0.048883</td>
+      <td>-0.071320</td>
+      <td>-0.092915</td>
+      <td>0.055489</td>
+      <td>0.050139</td>
+    </tr>
+    <tr>
+      <th>kickret.lngtd</th>
+      <td>0.015919</td>
+      <td>0.015918</td>
+      <td>-0.015776</td>
+      <td>-0.009385</td>
+      <td>0.017313</td>
+      <td>0.013117</td>
+      <td>0.038978</td>
+      <td>-0.039913</td>
+      <td>-0.028188</td>
+      <td>0.003417</td>
+      <td>...</td>
+      <td>0.036990</td>
+      <td>-0.027693</td>
+      <td>0.060981</td>
+      <td>-0.063833</td>
+      <td>-0.023582</td>
+      <td>-0.051065</td>
+      <td>-0.071315</td>
+      <td>-0.016586</td>
+      <td>0.006663</td>
+      <td>0.015919</td>
+    </tr>
+    <tr>
+      <th>punt.rets</th>
+      <td>-0.004381</td>
+      <td>-0.004388</td>
+      <td>0.030320</td>
+      <td>-0.013097</td>
+      <td>-0.014418</td>
+      <td>-0.034508</td>
+      <td>0.001491</td>
+      <td>-0.035878</td>
+      <td>-0.058378</td>
+      <td>0.151709</td>
+      <td>...</td>
+      <td>-0.040140</td>
+      <td>0.236685</td>
+      <td>0.017533</td>
+      <td>-0.031134</td>
+      <td>0.070275</td>
+      <td>0.122203</td>
+      <td>0.063320</td>
+      <td>0.006518</td>
+      <td>-0.045181</td>
+      <td>-0.004381</td>
+    </tr>
+    <tr>
+      <th>puntret.avg</th>
+      <td>-0.044203</td>
+      <td>-0.044207</td>
+      <td>-0.092789</td>
+      <td>-0.088547</td>
+      <td>-0.082117</td>
+      <td>0.021181</td>
+      <td>-0.038139</td>
+      <td>0.022080</td>
+      <td>0.043750</td>
+      <td>0.111496</td>
+      <td>...</td>
+      <td>0.013774</td>
+      <td>0.113012</td>
+      <td>0.080151</td>
+      <td>-0.057555</td>
+      <td>-0.068782</td>
+      <td>-0.034522</td>
+      <td>-0.056021</td>
+      <td>0.018172</td>
+      <td>-0.063964</td>
+      <td>-0.044203</td>
+    </tr>
+    <tr>
+      <th>puntret.tds</th>
+      <td>-0.078296</td>
+      <td>-0.078295</td>
+      <td>-0.104189</td>
+      <td>-0.100238</td>
+      <td>-0.090224</td>
+      <td>-0.022108</td>
+      <td>0.004786</td>
+      <td>0.026332</td>
+      <td>0.075252</td>
+      <td>0.053729</td>
+      <td>...</td>
+      <td>0.005769</td>
+      <td>-0.061357</td>
+      <td>0.075297</td>
+      <td>-0.044403</td>
+      <td>-0.056692</td>
+      <td>-0.046797</td>
+      <td>-0.064600</td>
+      <td>0.033961</td>
+      <td>-0.018397</td>
+      <td>-0.078296</td>
+    </tr>
+    <tr>
+      <th>puntret.lng</th>
+      <td>-0.048480</td>
+      <td>-0.048484</td>
+      <td>-0.107511</td>
+      <td>-0.113344</td>
+      <td>-0.099713</td>
+      <td>0.004144</td>
+      <td>-0.020865</td>
+      <td>-0.006666</td>
+      <td>0.018171</td>
+      <td>0.156598</td>
+      <td>...</td>
+      <td>0.001822</td>
+      <td>0.167446</td>
+      <td>0.099673</td>
+      <td>-0.043649</td>
+      <td>-0.030780</td>
+      <td>-0.013913</td>
+      <td>-0.046375</td>
+      <td>0.026364</td>
+      <td>-0.053431</td>
+      <td>-0.048480</td>
+    </tr>
+    <tr>
+      <th>puntret.lngtd</th>
+      <td>-0.073482</td>
+      <td>-0.073482</td>
+      <td>-0.104808</td>
+      <td>-0.099188</td>
+      <td>-0.088235</td>
+      <td>-0.019700</td>
+      <td>-0.004623</td>
+      <td>0.020196</td>
+      <td>0.065891</td>
+      <td>0.052582</td>
+      <td>...</td>
+      <td>0.015771</td>
+      <td>-0.065255</td>
+      <td>0.080975</td>
+      <td>-0.042878</td>
+      <td>-0.057174</td>
+      <td>-0.043651</td>
+      <td>-0.061521</td>
+      <td>0.024031</td>
+      <td>-0.022700</td>
+      <td>-0.073482</td>
+    </tr>
+    <tr>
+      <th>fgm</th>
+      <td>0.012627</td>
+      <td>0.012622</td>
+      <td>0.027756</td>
+      <td>0.034019</td>
+      <td>0.052071</td>
+      <td>-0.166103</td>
+      <td>-0.127847</td>
+      <td>-0.015890</td>
+      <td>-0.024802</td>
+      <td>0.246065</td>
+      <td>...</td>
+      <td>-0.140590</td>
+      <td>0.025163</td>
+      <td>0.126684</td>
+      <td>0.014606</td>
+      <td>0.026505</td>
+      <td>0.056964</td>
+      <td>0.075570</td>
+      <td>0.040847</td>
+      <td>-0.063918</td>
+      <td>0.012627</td>
+    </tr>
+    <tr>
+      <th>fga</th>
+      <td>-0.014526</td>
+      <td>-0.014531</td>
+      <td>0.087058</td>
+      <td>0.097952</td>
+      <td>0.117438</td>
+      <td>-0.144112</td>
+      <td>-0.108863</td>
+      <td>0.006925</td>
+      <td>0.013706</td>
+      <td>0.226670</td>
+      <td>...</td>
+      <td>-0.165703</td>
+      <td>0.015438</td>
+      <td>0.091047</td>
+      <td>0.021535</td>
+      <td>0.028735</td>
+      <td>0.048928</td>
+      <td>0.082354</td>
+      <td>0.036590</td>
+      <td>-0.046623</td>
+      <td>-0.014526</td>
+    </tr>
+    <tr>
+      <th>fgyds</th>
+      <td>0.019052</td>
+      <td>0.019049</td>
+      <td>0.041725</td>
+      <td>0.051651</td>
+      <td>0.054870</td>
+      <td>-0.088258</td>
+      <td>-0.097220</td>
+      <td>0.006069</td>
+      <td>-0.042798</td>
+      <td>0.191488</td>
+      <td>...</td>
+      <td>-0.142195</td>
+      <td>0.012718</td>
+      <td>0.115212</td>
+      <td>-0.027229</td>
+      <td>0.084570</td>
+      <td>0.089957</td>
+      <td>0.059971</td>
+      <td>0.061519</td>
+      <td>-0.000374</td>
+      <td>0.019052</td>
+    </tr>
+    <tr>
+      <th>totpts.fg</th>
+      <td>0.012627</td>
+      <td>0.012622</td>
+      <td>0.027756</td>
+      <td>0.034019</td>
+      <td>0.052071</td>
+      <td>-0.166103</td>
+      <td>-0.127847</td>
+      <td>-0.015890</td>
+      <td>-0.024802</td>
+      <td>0.246065</td>
+      <td>...</td>
+      <td>-0.140590</td>
+      <td>0.025163</td>
+      <td>0.126684</td>
+      <td>0.014606</td>
+      <td>0.026505</td>
+      <td>0.056964</td>
+      <td>0.075570</td>
+      <td>0.040847</td>
+      <td>-0.063918</td>
+      <td>0.012627</td>
+    </tr>
+    <tr>
+      <th>xpmade</th>
+      <td>0.063222</td>
+      <td>0.063219</td>
+      <td>-0.168722</td>
+      <td>-0.016139</td>
+      <td>0.259600</td>
+      <td>0.654883</td>
+      <td>-0.158286</td>
+      <td>-0.253870</td>
+      <td>-0.136398</td>
+      <td>0.345948</td>
+      <td>...</td>
+      <td>0.015142</td>
+      <td>0.188593</td>
+      <td>0.238901</td>
+      <td>0.123393</td>
+      <td>-0.118414</td>
+      <td>-0.015387</td>
+      <td>0.098281</td>
+      <td>0.104920</td>
+      <td>-0.182943</td>
+      <td>0.063222</td>
+    </tr>
+    <tr>
+      <th>xpmissed</th>
+      <td>-0.009027</td>
+      <td>-0.009025</td>
+      <td>0.031615</td>
+      <td>0.051030</td>
+      <td>0.139938</td>
+      <td>0.186714</td>
+      <td>-0.042673</td>
+      <td>0.076294</td>
+      <td>0.102677</td>
+      <td>-0.015212</td>
+      <td>...</td>
+      <td>-0.019055</td>
+      <td>0.079919</td>
+      <td>0.000926</td>
+      <td>0.033084</td>
+      <td>-0.004695</td>
+      <td>-0.018662</td>
+      <td>0.036886</td>
+      <td>-0.002311</td>
+      <td>-0.030696</td>
+      <td>-0.009027</td>
+    </tr>
+    <tr>
+      <th>xpa</th>
+      <td>0.060282</td>
+      <td>0.060280</td>
+      <td>-0.159008</td>
+      <td>-0.003279</td>
+      <td>0.291524</td>
+      <td>0.694084</td>
+      <td>-0.167151</td>
+      <td>-0.232114</td>
+      <td>-0.109378</td>
+      <td>0.338360</td>
+      <td>...</td>
+      <td>0.010239</td>
+      <td>0.206381</td>
+      <td>0.236502</td>
+      <td>0.130258</td>
+      <td>-0.118278</td>
+      <td>-0.019856</td>
+      <td>0.106368</td>
+      <td>0.103192</td>
+      <td>-0.188559</td>
+      <td>0.060282</td>
+    </tr>
+    <tr>
+      <th>xpb</th>
+      <td>0.025778</td>
+      <td>0.025780</td>
+      <td>0.014965</td>
+      <td>0.033145</td>
+      <td>0.046222</td>
+      <td>0.043975</td>
+      <td>-0.052858</td>
+      <td>-0.035680</td>
+      <td>-0.025199</td>
+      <td>0.026900</td>
+      <td>...</td>
+      <td>-0.020091</td>
+      <td>-0.049878</td>
+      <td>-0.006358</td>
+      <td>0.025315</td>
+      <td>-0.020105</td>
+      <td>-0.010735</td>
+      <td>0.010369</td>
+      <td>-0.014827</td>
+      <td>-0.005058</td>
+      <td>0.025778</td>
+    </tr>
+    <tr>
+      <th>xppts.tot</th>
+      <td>0.063222</td>
+      <td>0.063219</td>
+      <td>-0.168722</td>
+      <td>-0.016139</td>
+      <td>0.259600</td>
+      <td>0.654883</td>
+      <td>-0.158286</td>
+      <td>-0.253870</td>
+      <td>-0.136398</td>
+      <td>0.345948</td>
+      <td>...</td>
+      <td>0.015142</td>
+      <td>0.188593</td>
+      <td>0.238901</td>
+      <td>0.123393</td>
+      <td>-0.118414</td>
+      <td>-0.015387</td>
+      <td>0.098281</td>
+      <td>0.104920</td>
+      <td>-0.182943</td>
+      <td>0.063222</td>
+    </tr>
+    <tr>
+      <th>tackles</th>
+      <td>-0.010555</td>
+      <td>-0.010560</td>
+      <td>-0.101091</td>
+      <td>-0.183347</td>
+      <td>-0.105686</td>
+      <td>0.029792</td>
+      <td>-0.016541</td>
+      <td>-0.010735</td>
+      <td>-0.030762</td>
+      <td>-0.411054</td>
+      <td>...</td>
+      <td>-0.149528</td>
+      <td>0.122708</td>
+      <td>-0.022414</td>
+      <td>0.189486</td>
+      <td>-0.062752</td>
+      <td>-0.076857</td>
+      <td>0.049533</td>
+      <td>0.143231</td>
+      <td>-0.027659</td>
+      <td>-0.010555</td>
+    </tr>
+    <tr>
+      <th>asst.tackles</th>
+      <td>0.156220</td>
+      <td>0.156224</td>
+      <td>0.019647</td>
+      <td>-0.042829</td>
+      <td>-0.017563</td>
+      <td>-0.001678</td>
+      <td>0.098483</td>
+      <td>-0.065502</td>
+      <td>-0.038787</td>
+      <td>-0.239365</td>
+      <td>...</td>
+      <td>1.000000</td>
+      <td>-0.059999</td>
+      <td>0.002747</td>
+      <td>-0.023274</td>
+      <td>-0.093573</td>
+      <td>-0.095101</td>
+      <td>-0.092084</td>
+      <td>0.038429</td>
+      <td>-0.015775</td>
+      <td>0.156220</td>
+    </tr>
+    <tr>
+      <th>sacks</th>
+      <td>0.007156</td>
+      <td>0.007155</td>
+      <td>-0.140815</td>
+      <td>-0.120367</td>
+      <td>-0.044256</td>
+      <td>0.082012</td>
+      <td>-0.082520</td>
+      <td>-0.049449</td>
+      <td>-0.081839</td>
+      <td>0.162031</td>
+      <td>...</td>
+      <td>-0.059999</td>
+      <td>1.000000</td>
+      <td>0.028967</td>
+      <td>0.247326</td>
+      <td>-0.013450</td>
+      <td>0.025917</td>
+      <td>0.159033</td>
+      <td>0.087309</td>
+      <td>-0.073271</td>
+      <td>0.007156</td>
+    </tr>
+    <tr>
+      <th>defints</th>
+      <td>0.024758</td>
+      <td>0.024755</td>
+      <td>-0.157295</td>
+      <td>-0.168576</td>
+      <td>-0.123188</td>
+      <td>0.078079</td>
+      <td>-0.083441</td>
+      <td>-0.084848</td>
+      <td>-0.071604</td>
+      <td>0.229744</td>
+      <td>...</td>
+      <td>0.002747</td>
+      <td>0.028967</td>
+      <td>1.000000</td>
+      <td>0.028745</td>
+      <td>-0.022626</td>
+      <td>-0.044326</td>
+      <td>-0.013713</td>
+      <td>0.049154</td>
+      <td>-0.021862</td>
+      <td>0.024758</td>
+    </tr>
+    <tr>
+      <th>forced.fumbs</th>
+      <td>-0.061828</td>
+      <td>-0.061833</td>
+      <td>-0.081766</td>
+      <td>-0.080259</td>
+      <td>-0.052112</td>
+      <td>0.062989</td>
+      <td>-0.025834</td>
+      <td>-0.058847</td>
+      <td>-0.036035</td>
+      <td>0.073483</td>
+      <td>...</td>
+      <td>-0.023274</td>
+      <td>0.247326</td>
+      <td>0.028745</td>
+      <td>1.000000</td>
+      <td>-0.062648</td>
+      <td>0.002374</td>
+      <td>0.449667</td>
+      <td>0.234356</td>
+      <td>-0.106447</td>
+      <td>-0.061828</td>
+    </tr>
+    <tr>
+      <th>totalfumbs</th>
+      <td>0.037763</td>
+      <td>0.037759</td>
+      <td>0.114542</td>
+      <td>0.136556</td>
+      <td>0.064924</td>
+      <td>-0.046482</td>
+      <td>-0.004360</td>
+      <td>0.031043</td>
+      <td>-0.024922</td>
+      <td>0.019182</td>
+      <td>...</td>
+      <td>-0.093573</td>
+      <td>-0.013450</td>
+      <td>-0.022626</td>
+      <td>-0.062648</td>
+      <td>1.000000</td>
+      <td>0.728229</td>
+      <td>0.475196</td>
+      <td>-0.091529</td>
+      <td>0.619209</td>
+      <td>0.037763</td>
+    </tr>
+    <tr>
+      <th>recfumbs</th>
+      <td>0.070571</td>
+      <td>0.070567</td>
+      <td>-0.014914</td>
+      <td>-0.003809</td>
+      <td>-0.017414</td>
+      <td>-0.031253</td>
+      <td>-0.017912</td>
+      <td>-0.021044</td>
+      <td>-0.038424</td>
+      <td>0.106455</td>
+      <td>...</td>
+      <td>-0.095101</td>
+      <td>0.025917</td>
+      <td>-0.044326</td>
+      <td>0.002374</td>
+      <td>0.728229</td>
+      <td>1.000000</td>
+      <td>0.712441</td>
+      <td>-0.047423</td>
+      <td>0.005363</td>
+      <td>0.070571</td>
+    </tr>
+    <tr>
+      <th>totalrecfumbs</th>
+      <td>0.023604</td>
+      <td>0.023600</td>
+      <td>-0.081599</td>
+      <td>-0.089594</td>
+      <td>-0.056500</td>
+      <td>0.032131</td>
+      <td>-0.027767</td>
+      <td>-0.072585</td>
+      <td>-0.067395</td>
+      <td>0.172945</td>
+      <td>...</td>
+      <td>-0.092084</td>
+      <td>0.159033</td>
+      <td>-0.013713</td>
+      <td>0.449667</td>
+      <td>0.475196</td>
+      <td>0.712441</td>
+      <td>1.000000</td>
+      <td>0.195148</td>
+      <td>-0.048577</td>
+      <td>0.023604</td>
+    </tr>
+    <tr>
+      <th>fumbyds</th>
+      <td>-0.030357</td>
+      <td>-0.030355</td>
+      <td>-0.139443</td>
+      <td>-0.126877</td>
+      <td>-0.103763</td>
+      <td>-0.017377</td>
+      <td>-0.069647</td>
+      <td>-0.000543</td>
+      <td>-0.017553</td>
+      <td>0.018136</td>
+      <td>...</td>
+      <td>0.038429</td>
+      <td>0.087309</td>
+      <td>0.049154</td>
+      <td>0.234356</td>
+      <td>-0.091529</td>
+      <td>-0.047423</td>
+      <td>0.195148</td>
+      <td>1.000000</td>
+      <td>-0.079133</td>
+      <td>-0.030357</td>
+    </tr>
+    <tr>
+      <th>fumbslost</th>
+      <td>-0.003442</td>
+      <td>-0.003443</td>
+      <td>0.223178</td>
+      <td>0.228164</td>
+      <td>0.118211</td>
+      <td>-0.041184</td>
+      <td>0.032185</td>
+      <td>0.084078</td>
+      <td>0.014507</td>
+      <td>-0.113000</td>
+      <td>...</td>
+      <td>-0.015775</td>
+      <td>-0.073271</td>
+      <td>-0.021862</td>
+      <td>-0.106447</td>
+      <td>0.619209</td>
+      <td>0.005363</td>
+      <td>-0.048577</td>
+      <td>-0.079133</td>
+      <td>1.000000</td>
+      <td>-0.003442</td>
+    </tr>
+    <tr>
+      <th>games</th>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.094738</td>
+      <td>0.059402</td>
+      <td>0.066156</td>
+      <td>0.022737</td>
+      <td>0.029400</td>
+      <td>-0.000546</td>
+      <td>-0.067025</td>
+      <td>-0.056462</td>
+      <td>...</td>
+      <td>0.156220</td>
+      <td>0.007156</td>
+      <td>0.024758</td>
+      <td>-0.061828</td>
+      <td>0.037763</td>
+      <td>0.070571</td>
+      <td>0.023604</td>
+      <td>-0.030357</td>
+      <td>-0.003442</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>53 rows × 53 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="willbreeden/ds-blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/ds-blog/fastpages/jupyter/2020/07/07/NFL-Score-Prediction.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/ds-blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/ds-blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/ds-blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>My Data Science Journey</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/fastai" title="fastai"><svg class="svg-icon grey"><use xlink:href="/ds-blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/fastdotai" title="fastdotai"><svg class="svg-icon grey"><use xlink:href="/ds-blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
